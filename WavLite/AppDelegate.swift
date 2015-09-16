@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Parse
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +18,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // set up parse database
+        Parse.setApplicationId("ykrFkxjHcVz8j8oBSc8ZFpXH0gSu99vkKEhzt6Hs", clientKey: "pmzgjReSbDsmwvZXLNoqNGXtIqo5ZCbu04WwuSrM")
+        PFAnalytics.trackAppOpenedWithLaunchOptionsInBackground(launchOptions) {
+            success, error in
+            if error != nil {
+                println("Parse analytics error \(error?.localizedDescription)")
+            }
+        }
+
         return true
     }
 
