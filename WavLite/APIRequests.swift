@@ -10,8 +10,9 @@ import Foundation
 import Parse
 import SwiftyJSON
 
-var gJson:JSON!
-var gParseList:[PFObject]!
+var gJson:JSON?
+var gParseList:[PFObject]?
+
 
 class APIRequests {
     
@@ -88,6 +89,8 @@ class APIRequests {
         
         if PFUser.currentUser() != nil {
             
+            gParseList = nil
+            
             let query = PFQuery(className: "Lists")
             query.whereKey("createdBy", equalTo: PFUser.currentUser()!)
             query.orderByAscending("myLists")
@@ -99,6 +102,7 @@ class APIRequests {
                 }
                 else {
                     gParseList = objects as? [PFObject]
+                    println("Parse info: \(gParseList)")
                 }
             })
         }
@@ -107,5 +111,69 @@ class APIRequests {
             return
         }
     }
+    
+    func addUpdateItemToUserList(listId:String, newList:[String]) {
+        
+        let query = PFQuery(className: "Lists")
+        query.getObjectInBackgroundWithId(listId, block: {
+            
+            object, error in
+            
+            if error != nil {
+                println(error?.localizedDescription)
+               
+            }
+            else if object != nil{
+                
+                if let list = object {
+                    list["myLists"] = newList as AnyObject
+                    list.saveInBackgroundWithBlock({
+                        
+                        success, error in
+                        if error != nil {
+                            println(error!.localizedDescription)
+                        }
+                        else {
+                            self.grabListsFromParse()
+                        }
+                    })
+                }
+            }
+            else {
+                println("Object is nil")
+                
+            }
+        })
+    }
+    
+    func removeUserList(listId:String) {
+        
+        let query = PFQuery(className: "Lists")
+        query.getObjectInBackgroundWithId(listId, block: {
+        object, error in
+        
+            if error != nil {
+                //do some alert here
+            }
+            
+            else if let x = object{
+                
+                x.deleteInBackgroundWithBlock(){
+                    success, error in
+                    if error != nil {
+                        //alert box here
+                    }
+                    else if success {
+                        self.grabListsFromParse()
+                    }
+                }
+            }
+        })
+    }
+    
+    func removeVideoFromList(listId:String){
+        
+        
+        
+    }
 }
-

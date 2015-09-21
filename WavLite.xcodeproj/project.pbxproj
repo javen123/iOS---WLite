@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		09D2693F7DE4FA88120B2E54 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDBB07B3078640393CFE9C93 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		8F1369FC1BAB4FDE00C0F8FF /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1369FB1BAB4FDE00C0F8FF /* Reachability.swift */; };
+		8F1369FE1BAB50D700C0F8FF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F1369FD1BAB50D700C0F8FF /* SystemConfiguration.framework */; };
 		8F4394001BA8677000218B64 /* SearchViewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4393FF1BA8677000218B64 /* SearchViewVC.swift */; };
 		8F4394021BA86D7600218B64 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4394011BA86D7600218B64 /* SearchCell.swift */; };
 		8F688AC31B7277D400690575 /* DetailListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F688AC21B7277D400690575 /* DetailListVC.swift */; };
 		8F688AC51B7277EE00690575 /* DetailListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F688AC41B7277EE00690575 /* DetailListCell.swift */; };
 		8F7ED0971B7020F9004A4663 /* VideoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7ED0961B7020F9004A4663 /* VideoItem.swift */; };
 		8FA98D861BA0999800B428C7 /* ProfileVCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA98D851BA0999800B428C7 /* ProfileVCViewController.swift */; };
-		8FB5B6741BA8C7C800EAA9F8 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FB5B6731BA8C7C800EAA9F8 /* SwiftyJSON.framework */; };
 		8FB7EA4B1B6833660088B6BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA4A1B6833660088B6BC /* AppDelegate.swift */; };
 		8FB7EA521B6833660088B6BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FB7EA501B6833660088B6BC /* Main.storyboard */; };
 		8FB7EA541B6833660088B6BC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8FB7EA531B6833660088B6BC /* Images.xcassets */; };
@@ -24,6 +25,7 @@
 		8FB7EA701B68339A0088B6BC /* ListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA6F1B68339A0088B6BC /* ListVC.swift */; };
 		8FB7EA741B6833CA0088B6BC /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA731B6833CA0088B6BC /* ListCell.swift */; };
 		8FDEDEE31B695A2900397A5D /* APIRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDEDEE21B695A2900397A5D /* APIRequests.swift */; };
+		A444E4A456E8E38A00D0F886 /* Pods_WavLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 840DB22AE004FF9544907F82 /* Pods_WavLite.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,9 @@
 
 /* Begin PBXFileReference section */
 		1B80BADED686DD1D922A3B39 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		840DB22AE004FF9544907F82 /* Pods_WavLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WavLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F1369FB1BAB4FDE00C0F8FF /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		8F1369FD1BAB50D700C0F8FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		8F4393FF1BA8677000218B64 /* SearchViewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewVC.swift; sourceTree = "<group>"; };
 		8F4394011BA86D7600218B64 /* SearchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		8F688AC21B7277D400690575 /* DetailListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailListVC.swift; sourceTree = "<group>"; };
@@ -46,7 +51,6 @@
 		8F7ED0981B711C61004A4663 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "Pods/../build/Debug-iphoneos/SwiftyJSON.framework"; sourceTree = "<group>"; };
 		8FA98D851BA0999800B428C7 /* ProfileVCViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileVCViewController.swift; sourceTree = "<group>"; };
 		8FB5B6711BA8C11800EAA9F8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		8FB5B6731BA8C7C800EAA9F8 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "Pods/../build/Release-iphoneos/SwiftyJSON.framework"; sourceTree = "<group>"; };
 		8FB7EA451B6833660088B6BC /* WavLite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WavLite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FB7EA491B6833660088B6BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8FB7EA4A1B6833660088B6BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -70,8 +74,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8FB5B6741BA8C7C800EAA9F8 /* SwiftyJSON.framework in Frameworks */,
+				8F1369FE1BAB50D700C0F8FF /* SystemConfiguration.framework in Frameworks */,
 				09D2693F7DE4FA88120B2E54 /* Pods.framework in Frameworks */,
+				A444E4A456E8E38A00D0F886 /* Pods_WavLite.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,19 +93,13 @@
 		44C446D0FF04A1868C65DB7E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8FB5B6731BA8C7C800EAA9F8 /* SwiftyJSON.framework */,
+				8F1369FD1BAB50D700C0F8FF /* SystemConfiguration.framework */,
 				8FB5B6711BA8C11800EAA9F8 /* MediaPlayer.framework */,
 				8F7ED0981B711C61004A4663 /* SwiftyJSON.framework */,
 				FDBB07B3078640393CFE9C93 /* Pods.framework */,
+				840DB22AE004FF9544907F82 /* Pods_WavLite.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		8F7BF8771B73C73E0081402D /* Views */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Views;
 			sourceTree = "<group>";
 		};
 		8F7ED0951B7020DE004A4663 /* Data */ = {
@@ -108,6 +107,7 @@
 			children = (
 				8FDEDEE21B695A2900397A5D /* APIRequests.swift */,
 				8F7ED0961B7020F9004A4663 /* VideoItem.swift */,
+				8F1369FB1BAB4FDE00C0F8FF /* Reachability.swift */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -135,7 +135,6 @@
 		8FB7EA471B6833660088B6BC /* WavLite */ = {
 			isa = PBXGroup;
 			children = (
-				8F7BF8771B73C73E0081402D /* Views */,
 				8F7ED0951B7020DE004A4663 /* Data */,
 				8FB7EA6C1B68337A0088B6BC /* VCs */,
 				8FB7EA501B6833660088B6BC /* Main.storyboard */,
@@ -338,7 +337,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WavLite/Pods-WavLite-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -359,6 +358,7 @@
 				8FA98D861BA0999800B428C7 /* ProfileVCViewController.swift in Sources */,
 				8FB7EA741B6833CA0088B6BC /* ListCell.swift in Sources */,
 				8FB7EA6E1B68338E0088B6BC /* HomeVC.swift in Sources */,
+				8F1369FC1BAB4FDE00C0F8FF /* Reachability.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

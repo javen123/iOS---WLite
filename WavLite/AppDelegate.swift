@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import ParseTwitterUtils
+import ParseFacebookUtilsV4
 import Parse
 
 
@@ -27,7 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 println("Parse analytics error \(error?.localizedDescription)")
             }
         }
-
+        PFTwitterUtils.initializeWithConsumerKey("r7cJ69aO0Y7LaZuR6g8DmzBpJ", consumerSecret: "AvCnihJJ0PjbvcjAM8hCjG9xxZjhcrSypJyP7bUSprInQyle3Y")
+        
+        
         return true
     }
 

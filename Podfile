@@ -5,8 +5,8 @@ use_frameworks!
 
 xcodeproj 'WavLite'
 pod 'ParseUI'
-pod 'FBSDKCoreKit' 
-pod'FBSDKLoginKit' 
-pod'FBSDKShareKit'
 pod 'SwiftyJSON', '~> 2.2.1'
 pod 'Swift-YouTube-Player', '~> 0.2'
+pod 'ParseFacebookUtilsV4', '~> 1.8'
+pod 'ParseTwitterUtils', '~> 1.8'
+

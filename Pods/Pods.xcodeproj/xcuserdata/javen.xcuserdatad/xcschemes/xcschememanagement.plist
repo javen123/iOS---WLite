@@ -19,12 +19,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>FBSDKShareKit.xcscheme</key>
+		<key>Parse.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Parse.xcscheme</key>
+		<key>ParseFacebookUtilsV4.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ParseTwitterUtils.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -52,7 +57,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>20E76F460EAD1ADB0D34868982F6688D</key>
+		<key>293F45022F0A269E7B98A4A0EE208960</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3D9351FD8E8BF6BC69F45844D7E90399</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -62,22 +72,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4F4C74573AA700561C2E440375CC2667</key>
+		<key>585B89FEC2E5B1051814D7A6FAE79124</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4F77CB5D3A460C01D35173F570A9004E</key>
+		<key>6751B1CC3D3847D5D3EE61E06AC3D406</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>971D8405111A1D2D8E278D917508ECBC</key>
+		<key>77BE73FB6D8BF8E8BDCC08D2CA47CF4D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AF152BDFB72288304F556DE1B910F372</key>
+		<key>97C7A3773C24DDD0E3503AB955A5D6C6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B3ECD0EEA517835C878A291B18F85E86</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -87,12 +102,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C3D3C7671221023CF10FA6EDF25DCC8B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FB242BC2048FBF1CADCD51947566110A</key>
+		<key>FDFFE93B371DE09C3E9566B5608126DC</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -14,7 +14,7 @@ import SwiftyJSON
 class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate {
     
    
-    @IBOutlet weak var webView: UIWebView!
+    @IBOutlet var webView:UIWebView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +28,15 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         let url = NSURL(string: "http://www.wavlite.com/api/videoPlayer.html")
         let request = NSURLRequest(URL: url!)
         webView.loadRequest(request)
+        
+        //Add logout notification
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        
+        logInHelper()
+        
     }
     
     
@@ -43,11 +52,9 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     
     func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
         
-        if gParseList == nil {
-            
-            let API = APIRequests()
-            API.grabListsFromParse()
-        }
+        let API = APIRequests()
+        API.grabListsFromParse()
+       
         
          //        let graphRequest:FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "/me?fields=picture,first_name,last_name,email", parameters: nil)
         //        graphRequest.startWithCompletionHandler({
@@ -109,9 +116,12 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     
         
     func logInHelper(){
-        //loginVC
         
         if PFUser.currentUser() == nil {
+            
+            //clean current lists
+            gJson = nil
+            gParseList?.removeAll(keepCapacity: true)
             var loginVC = PFLogInViewController()
             
             loginVC.fields = (PFLogInFields.UsernameAndPassword
@@ -119,7 +129,8 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
                 | PFLogInFields.SignUpButton
                 | PFLogInFields.PasswordForgotten
                 | PFLogInFields.DismissButton
-                | PFLogInFields.Facebook)
+//                | PFLogInFields.Facebook)
+                | PFLogInFields.Twitter)
             
             //            loginVC.facebookPermissions = ["public_profile", "email"]
             

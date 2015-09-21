@@ -9,7 +9,7 @@
         <!--Home-->
         <scene sceneID="hNz-n2-bh7">
             <objects>
-                <viewController title="Home" id="9pv-A4-QxB" customClass="HomeVC" customModule="WavLite" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="homeVC" title="Home" id="9pv-A4-QxB" customClass="HomeVC" customModule="WavLite" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
                         <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
@@ -84,6 +84,9 @@
                                     <navigationItem title="Title" id="Rtp-Xz-UiK">
                                         <barButtonItem key="rightBarButtonItem" title="Log Out" id="b3B-lT-AiB">
                                             <color key="tintColor" red="0.74117647058823533" green="0.85098039215686272" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="logoutBtnPressed:" destination="hea-pm-bmi" id="uPc-V5-6uk"/>
+                                            </connections>
                                         </barButtonItem>
                                     </navigationItem>
                                 </items>
@@ -109,7 +112,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="svs-BY-pg3">
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You have no lists at this time." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ugF-w2-6si">
+                                <rect key="frame" x="188" y="290" width="224" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.69019607843137254" green="0.81568627450980391" blue="0.94117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="svs-BY-pg3">
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                                 <color key="backgroundColor" red="0.10588235294117647" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="separatorColor" red="0.74117647058823533" green="0.85098039215686272" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
@@ -155,6 +164,9 @@
                                     <navigationItem title="My Lists" id="2SO-60-Leq">
                                         <barButtonItem key="rightBarButtonItem" title="Log out" id="P67-YB-bCU">
                                             <color key="tintColor" red="0.74117647058823533" green="0.85098039215686272" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="btn_logout_pressed:" destination="8rJ-Kc-sve" id="bIn-K1-HoU"/>
+                                            </connections>
                                         </barButtonItem>
                                     </navigationItem>
                                 </items>
@@ -163,15 +175,22 @@
                         <color key="backgroundColor" red="0.10588235294117647" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="Bzq-d5-wiw" secondAttribute="trailing" constant="-16" id="0t7-Tp-t1x"/>
+                            <constraint firstItem="svs-BY-pg3" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" constant="-16" id="2VC-8P-FEc"/>
+                            <constraint firstAttribute="centerY" secondItem="ugF-w2-6si" secondAttribute="centerY" id="KEN-gs-ilZ"/>
                             <constraint firstItem="Bzq-d5-wiw" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" id="KqN-JC-mvv"/>
+                            <constraint firstAttribute="centerX" secondItem="ugF-w2-6si" secondAttribute="centerX" id="KxQ-7E-rKl"/>
+                            <constraint firstItem="Djb-ko-YwX" firstAttribute="top" secondItem="svs-BY-pg3" secondAttribute="bottom" id="PEN-DY-wMt"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="svs-BY-pg3" secondAttribute="trailing" constant="-16" id="UrN-YI-XGo"/>
+                            <constraint firstItem="svs-BY-pg3" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" constant="44" id="tyD-bW-YvL"/>
                             <constraint firstItem="Bzq-d5-wiw" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" constant="-16" id="xVa-6P-F6h"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="My Lists" image="icon_lists" id="pM3-Ul-9YG"/>
                     <navigationItem key="navigationItem" title="My Lists" id="SxZ-kG-76r"/>
                     <connections>
+                        <outlet property="noListLabel" destination="ugF-w2-6si" id="RZu-4U-U51"/>
                         <outlet property="tableView" destination="svs-BY-pg3" id="DGO-kP-twd"/>
-                        <segue destination="a7U-cd-VPk" kind="show" identifier="toDetailSegue" id="OJV-2e-Ush"/>
+                        <segue destination="a7U-cd-VPk" kind="modal" identifier="toDetailSegue" modalTransitionStyle="flipHorizontal" id="OJV-2e-Ush"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
@@ -202,6 +221,12 @@
                                             <color key="tintColor" red="0.74117647058823533" green="0.85098039215686272" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <action selector="bakcBtnPressed:" destination="a7U-cd-VPk" id="HUI-Oh-HbY"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Log Out" id="rtr-zg-50e">
+                                            <color key="tintColor" red="0.52549019607843139" green="0.61568627450980395" blue="0.70980392156862748" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="logOutBtnPressed:" destination="a7U-cd-VPk" id="x8w-Sp-bP2"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -259,16 +284,26 @@
                                     <outlet property="delegate" destination="a7U-cd-VPk" id="t5V-WF-cb8"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="60H-6H-D5A" customClass="YouTubePlayerView" customModule="Swift_YouTube_Player">
+                                <rect key="frame" x="150" y="224" width="300" height="168"/>
+                                <color key="backgroundColor" red="0.098039217293262482" green="0.098039217293262482" blue="0.098039217293262482" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="60H-6H-D5A" secondAttribute="height" multiplier="16:9" id="HJ2-rh-DHE"/>
+                                    <constraint firstAttribute="width" constant="300" id="c5f-FC-2eJ"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="GJn-wv-GH1" secondAttribute="trailing" constant="-16" id="37V-VL-K5z"/>
+                            <constraint firstAttribute="centerX" secondItem="60H-6H-D5A" secondAttribute="centerX" id="3aH-9c-TuH"/>
                             <constraint firstAttribute="centerY" secondItem="32s-vm-LzK" secondAttribute="centerY" id="AsP-ay-Qkg"/>
                             <constraint firstAttribute="centerX" secondItem="32s-vm-LzK" secondAttribute="centerX" id="NeK-Oz-SYn"/>
                             <constraint firstItem="2HJ-9f-lhi" firstAttribute="leading" secondItem="Iit-wR-rXS" secondAttribute="leadingMargin" constant="-16" id="Uue-Zu-4mQ"/>
                             <constraint firstAttribute="trailingMargin" secondItem="2HJ-9f-lhi" secondAttribute="trailing" constant="-16" id="bJi-nr-eKd"/>
                             <constraint firstItem="NdV-YX-KPs" firstAttribute="top" secondItem="GJn-wv-GH1" secondAttribute="bottom" constant="5" id="dhV-Lk-9hx"/>
                             <constraint firstItem="2HJ-9f-lhi" firstAttribute="top" secondItem="6gB-eP-CqP" secondAttribute="bottom" id="fy7-w2-p4s"/>
+                            <constraint firstAttribute="centerY" secondItem="60H-6H-D5A" secondAttribute="centerY" constant="-8" id="kgK-oe-xMw"/>
                             <constraint firstAttribute="centerX" secondItem="GJn-wv-GH1" secondAttribute="centerX" id="mDE-aJ-FDD"/>
                             <constraint firstItem="GJn-wv-GH1" firstAttribute="leading" secondItem="Iit-wR-rXS" secondAttribute="leadingMargin" constant="-16" id="qMt-Od-5GE"/>
                             <constraint firstItem="GJn-wv-GH1" firstAttribute="top" secondItem="2HJ-9f-lhi" secondAttribute="bottom" id="qNu-GI-9gj"/>
@@ -278,17 +313,18 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="activityIndicator" destination="32s-vm-LzK" id="Wjs-HF-iis"/>
+                        <outlet property="playerView" destination="60H-6H-D5A" id="efX-HX-f9c"/>
                         <outlet property="tableView" destination="GJn-wv-GH1" id="m7O-Tf-YWa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cdp-Ee-WCu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="678" y="962"/>
+            <point key="canvasLocation" x="310" y="942"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
-                <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="tabController" id="49e-Tb-3d3" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="W28-zg-YXA">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
@@ -319,9 +355,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="chs-bg-D6T">
-                                <rect key="frame" x="290" y="290" width="20" height="20"/>
-                            </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="vgD-83-6ZA">
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                                 <color key="backgroundColor" red="0.10588235294117647" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="calibratedRGB"/>
@@ -385,6 +418,9 @@
                                     <navigationItem title="WavLite Media Search" id="mXq-C3-MFJ">
                                         <barButtonItem key="rightBarButtonItem" title="Log Out" id="NmO-V6-ns3">
                                             <color key="tintColor" red="0.74117647058823533" green="0.85098039215686272" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="logOutBtnPressed:" destination="JgD-Yh-X2S" id="D7h-la-EPW"/>
+                                            </connections>
                                         </barButtonItem>
                                     </navigationItem>
                                 </items>
@@ -397,18 +433,24 @@
                                     <constraint firstAttribute="width" secondItem="MIq-Zx-RQ5" secondAttribute="height" multiplier="16:9" id="dlB-Ph-6dg"/>
                                 </constraints>
                             </view>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="chs-bg-D6T">
+                                <rect key="frame" x="290" y="290" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="0.10588235294117647" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="centerY" secondItem="MIq-Zx-RQ5" secondAttribute="centerY" constant="-8" id="Bmm-gB-GTS"/>
+                            <constraint firstItem="G2T-Oa-Y4D" firstAttribute="top" secondItem="D2p-Us-ThU" secondAttribute="bottom" id="G75-Sq-abK"/>
                             <constraint firstItem="vgD-83-6ZA" firstAttribute="top" secondItem="G2T-Oa-Y4D" secondAttribute="bottom" id="HiU-PD-qJ1"/>
                             <constraint firstAttribute="centerX" secondItem="MIq-Zx-RQ5" secondAttribute="centerX" id="Jbb-Mz-nQd"/>
+                            <constraint firstItem="vgD-83-6ZA" firstAttribute="top" secondItem="D2p-Us-ThU" secondAttribute="bottom" constant="44" id="JkN-q2-Xje"/>
                             <constraint firstItem="vgD-83-6ZA" firstAttribute="leading" secondItem="b5v-ha-O3H" secondAttribute="leadingMargin" constant="-16" id="Kc3-cW-pcF"/>
                             <constraint firstItem="G2T-Oa-Y4D" firstAttribute="top" secondItem="D2p-Us-ThU" secondAttribute="bottom" id="PD4-8E-SVZ"/>
                             <constraint firstItem="qCg-dv-Myo" firstAttribute="top" secondItem="vgD-83-6ZA" secondAttribute="bottom" id="Rrx-Kf-OSK"/>
                             <constraint firstItem="G2T-Oa-Y4D" firstAttribute="leading" secondItem="b5v-ha-O3H" secondAttribute="leadingMargin" constant="-16" id="aaW-ol-yUE"/>
                             <constraint firstAttribute="trailingMargin" secondItem="G2T-Oa-Y4D" secondAttribute="trailing" constant="-16" id="eGc-VS-Lvr"/>
                             <constraint firstAttribute="trailingMargin" secondItem="vgD-83-6ZA" secondAttribute="trailing" constant="-16" id="laZ-RV-m0T"/>
+                            <constraint firstItem="qCg-dv-Myo" firstAttribute="top" secondItem="vgD-83-6ZA" secondAttribute="bottom" id="py6-cM-Z42"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" systemItem="search" id="vf6-2E-2p5"/>

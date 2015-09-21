@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 import SwiftyJSON
+import Swift_YouTube_Player
 
 
 
@@ -17,30 +18,41 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var playerView: YouTubePlayerView!
     
-        
+    
+    var vidId:String?
     var videos:PFObject!
     var vidInfo = [VideoItem]()
     var vidIds:String!
    
+    var playerActive = false
     
     let API = APIRequests()
     
-    
-    override func viewWillAppear(animated: Bool) {
-        tableView.hidden = true
-        activityIndicator.startAnimating()
-        API.userYTListPull(vidIds)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "convertYtApiInfoToCell:", name: "YTFINISHED", object: nil)
-        
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         convertPFObjectToYouTubeList(videos)
         vidIds = convertPFObjectToYouTubeList(videos)
+        
         self.navigationItem.title = videos["listTitle"] as? String
+        
+        self.playerView.hidden = true
+        
+        //tableview long press aet up
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
+        self.tableView.addGestureRecognizer(longPress)
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        tableView.hidden = true
+        activityIndicator.startAnimating()
+        API.userYTListPull(vidIds)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "convertYtApiInfoToCell:", name: "YTFINISHED", object: nil)
         
     }
     
@@ -51,6 +63,14 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     }
     @IBAction func bakcBtnPressed(sender: AnyObject) {
         self.dismissViewControllerAnimated(false, completion: nil)
+    }
+    @IBAction func logOutBtnPressed(sender: AnyObject) {
+        
+        PFUser.logOut()
+        self.dismissViewControllerAnimated(true, completion: nil)
+        self.tabBarController?.selectedIndex = 0
+        
+        
     }
     
     //MARK: TableView data and delegate
@@ -93,15 +113,64 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let vidId:String = vidInfo[indexPath.row].videoId
+        self.playerActive = true
         
-        let aView = UIView(frame: CGRectMake(10, 150, self.view.frame.width - 10, self.view.frame.width/1.7))
-        aView.backgroundColor = UIColor.blackColor()
+        self.vidId = self.vidInfo[indexPath.row].videoId
         
-                
-        self.view.addSubview(aView)
+        if count(self.vidId!) <= 11 {
+            self.playerView.loadVideoID(self.vidId!)
+            
+        }
+        else {
+            self.playerView.loadPlaylistID(self.vidId!)
+        }
+        
+        self.playerView.hidden = false
+        
+        // set up tap for player view
+        let tap = UITapGestureRecognizer(target: self, action: "handleTap:")
+        self.view.addGestureRecognizer(tap)
+        
+
         
     }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        if editingStyle == UITableViewCellEditingStyle.Delete {
+            print(self.vidInfo[indexPath.row])
+            self.vidInfo.removeAtIndex(indexPath.row)
+            
+//            let api = APIRequests()
+//            api.addUpdateItemToUserList()
+            self.tableView.reloadData()
+        }
+    }
+    
+    
+    //MARK: Handle Taps
+    
+    func handleTap(tap:UITapGestureRecognizer){
+        
+        if self.playerActive == true {
+            self.playerView.hidden = true
+            self.playerActive = false
+            self.view.removeGestureRecognizer(tap)
+        }
+    }
+    
+    func handleLongPress(press: UILongPressGestureRecognizer){
+        let state = press.state
+        let locationView = press.locationInView(self.tableView)
+        let indexPath = self.tableView.indexPathForRowAtPoint(locationView)
+        let cell = vidInfo[indexPath!.row]
+        vidId = cell.videoId
+        let vidTitle = cell.videoTitle
+        
+        
+    }
+
+
     
     //MARK:Helpers
     
@@ -123,7 +192,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     func convertYtApiInfoToCell(notification:NSNotification){
         
-        for (key:String, value:JSON) in gJson["items"] {
+        for (key:String, value:JSON) in gJson!["items"] {
             let items = value
             
             let id = items["id"].stringValue
@@ -141,4 +210,62 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         })
     }
     
+    //MARK: Alerts
+    
+    func addTitleToListSheet(vidTitle: String) {
+        
+        var alertSheet:UIAlertController?
+        
+        if let objects = gParseList {
+            
+            alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            
+            let moveToAction = UIAlertAction(title: "Move to another list", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                
+                
+            })
+            alertSheet?.addAction(moveToAction)
+            
+        }
+            
+        else {
+            
+            alertSheet = UIAlertController(title: vidTitle, message: "Create your first list", preferredStyle: UIAlertControllerStyle.Alert)
+            alertSheet?.addTextFieldWithConfigurationHandler({ (text:UITextField!) -> Void in
+                
+                
+                // do something with the code here
+            })
+            
+            let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                
+                
+                
+            })
+            
+            alertSheet?.addAction(saveAction)
+            
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertSheet?.addAction(cancelAction)
+        self.presentViewController(alertSheet!, animated: true, completion: nil)
     }
+    
+    func addSingleTitleAlertHelper(success:Bool){
+        
+        if success {
+            
+            let alert = UIAlertController(title: "Success", message: "Your video has been added", preferredStyle: UIAlertControllerStyle.Alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            alert.addAction(cancelAction)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+        else {
+            
+            let alert = UIAlertController(title: "Oops", message: "You may have to try that again", preferredStyle: UIAlertControllerStyle.Alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            alert.addAction(cancelAction)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+    }
+}

@@ -11,7 +11,7 @@ import SwiftyJSON
 import Swift_YouTube_Player
 
 
-class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate  {
+class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -19,7 +19,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var playerView: YouTubePlayerView!
     
-    
+    var vidId:String?
    
     var ytAPILists:[VideoItem] = [VideoItem]()
     var playerActive = false
@@ -38,7 +38,11 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         
         self.playerView.hidden = true
         
+        //tableview long press aet up
         
+        let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
+        self.tableView.addGestureRecognizer(longPress)
+
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -84,18 +88,20 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         return ytAPILists.count
     }
     
+    //MARK: table View delegates
+    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         self.playerActive = true
         
-        let vidId = ytAPILists[indexPath.row].videoId
+        self.vidId = ytAPILists[indexPath.row].videoId
         
-        if count(vidId) <= 11 {
-            self.playerView.loadVideoID(vidId)
+        if count(self.vidId!) <= 11 {
+            self.playerView.loadVideoID(self.vidId!)
             
         }
         else {
-            self.playerView.loadPlaylistID(vidId)
+            self.playerView.loadPlaylistID(self.vidId!)
         }
         
         self.playerView.hidden = false
@@ -115,11 +121,31 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         }
     }
     
+    func handleLongPress(press: UILongPressGestureRecognizer){
+        let state = press.state
+        let locationView = press.locationInView(self.tableView)
+        let indexPath = self.tableView.indexPathForRowAtPoint(locationView)
+        let cell = ytAPILists[indexPath!.row]
+        vidId = cell.videoId
+        let vidTitle = cell.videoTitle
+        
+        
+        // implement alerts
+        addTitleToListSheet(vidId!)
+        
+    }
+    
+    @IBAction func logOutBtnPressed(sender: AnyObject) {
+        
+        PFUser.logOut()
+        self.tabBarController?.selectedIndex = 0
+    }
+    
     //MARK: HELPERS
     
     func convertYtApiInfoToCell(notification:NSNotification){
         
-        for (key:String, value:JSON) in gJson["items"] {
+        for (key:String, value:JSON) in gJson!["items"] {
            
             let id:String
             if value["id"]["playlistId"] != nil{
@@ -152,4 +178,73 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         }
     }
     
+    //MARK: Alerts
+    
+    func addTitleToListSheet(vidTitle: String) {
+        
+        var alertSheet:UIAlertController?
+        
+        if let objects = gParseList {
+            
+            alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            
+            for x in objects{
+                let id = x.objectId
+                var myLists:[String] = x["myLists"] as! [String]
+                let title:String = x.valueForKey("listTitle") as! String
+                let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
+                    
+                    myLists.append(self.vidId!)
+                    print(myLists)
+                    let add = APIRequests()
+                    add.addUpdateItemToUserList(id!, newList: myLists)
+                    
+                    //TODO:Figue out synchronous call before showing alert
+                    
+                    self.addSingleTitleAlertHelper(true)
+                })
+                
+                alertSheet?.addAction(action)
+            }
+        }
+        else {
+            
+            alertSheet = UIAlertController(title: vidTitle, message: "Create your first list", preferredStyle: UIAlertControllerStyle.Alert)
+            alertSheet?.addTextFieldWithConfigurationHandler({ (text:UITextField!) -> Void in
+                
+                
+                // do something with the code here
+            })
+            
+            let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                
+                
+                
+            })
+            
+            alertSheet?.addAction(saveAction)
+            
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertSheet?.addAction(cancelAction)
+        self.presentViewController(alertSheet!, animated: true, completion: nil)
+    }
+
+    func addSingleTitleAlertHelper(success:Bool){
+        
+        if success {
+            
+            let alert = UIAlertController(title: "Success", message: "Your video has been added", preferredStyle: UIAlertControllerStyle.Alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            alert.addAction(cancelAction)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+        else {
+            
+            let alert = UIAlertController(title: "Oops", message: "You may have to try that again", preferredStyle: UIAlertControllerStyle.Alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            alert.addAction(cancelAction)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+    }
 }

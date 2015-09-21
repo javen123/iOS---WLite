@@ -16,10 +16,16 @@ PODS:
     - FBSDKCoreKit/arc
   - FBSDKLoginKit (4.6.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.6.0):
-    - FBSDKCoreKit
   - Parse (1.8.3):
     - Bolts/Tasks (>= 1.2.2)
+  - ParseFacebookUtilsV4 (1.8.3):
+    - Bolts/Tasks (>= 1.2.2)
+    - FBSDKCoreKit (~> 4.0)
+    - FBSDKLoginKit (~> 4.0)
+    - Parse (~> 1.8.3)
+  - ParseTwitterUtils (1.8.3):
+    - Bolts/Tasks (>= 1.2.2)
+    - Parse (~> 1.8.3)
   - ParseUI (1.1.6):
     - Bolts/Tasks (~> 1.2)
     - Parse (~> 1.8)
@@ -27,9 +33,8 @@ PODS:
   - SwiftyJSON (2.2.1)
 
 DEPENDENCIES:
-  - FBSDKCoreKit
-  - FBSDKLoginKit
-  - FBSDKShareKit
+  - ParseFacebookUtilsV4 (~> 1.8)
+  - ParseTwitterUtils (~> 1.8)
   - ParseUI
   - Swift-YouTube-Player (~> 0.2)
   - SwiftyJSON (~> 2.2.1)
@@ -38,8 +43,9 @@ SPEC CHECKSUMS:
   Bolts: 20a2bd788273360cb1e31530dc19b8544eef2544
   FBSDKCoreKit: 9954492d90c5fd65ae831395697a1660360d61f1
   FBSDKLoginKit: 3d07febbfa884b9878cacba54f705bb41f07d4b6
-  FBSDKShareKit: f474f1123791e215d0299b98b3ee92ddd9187d86
   Parse: 4b251ac63b76d12b334a32579cc3b174446f0c39
+  ParseFacebookUtilsV4: 603b78d4122642f3cdff5eee5b7b90e8d81b1e0c
+  ParseTwitterUtils: 4df4b7f5cb903809221c8e013683d9a9e6536951
   ParseUI: 8a22e448c03f825203d8c379c80523517f68baa3
   Swift-YouTube-Player: f6d8e930a3e0bcdf78b2b798d22261718ad477d8
   SwiftyJSON: ae2d0a3d68025d136602a33c4ee215091ced3e33
