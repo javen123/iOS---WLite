@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         PFAnalytics.trackAppOpenedWithLaunchOptionsInBackground(launchOptions) {
             success, error in
             if error != nil {
-                println("Parse analytics error \(error?.localizedDescription)")
+                print("Parse analytics error \(error?.localizedDescription)")
             }
         }
         PFTwitterUtils.initializeWithConsumerKey("r7cJ69aO0Y7LaZuR6g8DmzBpJ", consumerSecret: "AvCnihJJ0PjbvcjAM8hCjG9xxZjhcrSypJyP7bUSprInQyle3Y")

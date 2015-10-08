@@ -12,13 +12,13 @@ import SwiftyJSON
 import Swift_YouTube_Player
 
 
-
 class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var playerView: YouTubePlayerView!
+    @IBOutlet weak var navBar: UINavigationBar!
     
     
     var vidId:String?
@@ -36,8 +36,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
         convertPFObjectToYouTubeList(videos)
         vidIds = convertPFObjectToYouTubeList(videos)
-        
-        self.navigationItem.title = videos["listTitle"] as? String
+        self.navBar.topItem?.title = videos["listTitle"] as? String
         
         self.playerView.hidden = true
         
@@ -50,7 +49,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     override func viewWillAppear(animated: Bool) {
         tableView.hidden = true
-        activityIndicator.startAnimating()
+        self.activityIndicatorAction()
         API.userYTListPull(vidIds)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "convertYtApiInfoToCell:", name: "YTFINISHED", object: nil)
         
@@ -101,7 +100,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
        
        
         tableView.hidden = false
-        activityIndicator.stopAnimating()
+        self.activityIndicatorAction()
         return cell
     }
     
@@ -117,7 +116,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
         self.vidId = self.vidInfo[indexPath.row].videoId
         
-        if count(self.vidId!) <= 11 {
+        if (self.vidId!).characters.count <= 11 {
             self.playerView.loadVideoID(self.vidId!)
             
         }
@@ -138,13 +137,14 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         if editingStyle == UITableViewCellEditingStyle.Delete {
-            print(self.vidInfo[indexPath.row])
+            
             self.vidInfo.removeAtIndex(indexPath.row)
             
 //            let api = APIRequests()
 //            api.addUpdateItemToUserList()
             self.tableView.reloadData()
         }
+        
     }
     
     
@@ -167,7 +167,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         vidId = cell.videoId
         let vidTitle = cell.videoTitle
         
-        
+        self.editTitleInList(vidTitle, id:vidId!)
     }
 
 
@@ -180,28 +180,29 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
         if let list:[String] = object["myLists"] as? [String]{
             if list.count > 1 {
-                temp = ",".join(list)
+                temp = list.joinWithSeparator(",")
             }
             else {
                 temp = list[0]
             }
         }
-        println("temp list is: \(temp)")
+        print("temp list is: \(temp)")
         return temp
     }
     
     func convertYtApiInfoToCell(notification:NSNotification){
         
-        for (key:String, value:JSON) in gJson!["items"] {
-            let items = value
+        for (_, value): (String, JSON) in gJson!["items"] {
             
+            let items = value
+            print(items)
             let id = items["id"].stringValue
             
-            println("Vid id is : \(id)")
+            print("Vid id is : \(id)")
             let vidTitle = items["snippet"]["title"].stringValue
             let vidDes = items["snippet"]["description"].stringValue
             let url = items["snippet"]["thumbnails"]["default"]["url"].stringValue
-            var vidInfo = VideoItem(vidId: id, vidTitle: vidTitle, vidDesc: vidDes, vidPic: url)
+            let vidInfo = VideoItem(vidId: id, vidTitle: vidTitle, vidDesc: vidDes, vidPic: url)
             self.vidInfo.append(vidInfo)
         }
 
@@ -212,43 +213,38 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     //MARK: Alerts
     
-    func addTitleToListSheet(vidTitle: String) {
+    func editTitleInList(vidTitle: String, id:String) {
         
-        var alertSheet:UIAlertController?
+        let alert = UIAlertController(title: vidTitle, message: "Edit this item?", preferredStyle: UIAlertControllerStyle.Alert)
         
-        if let objects = gParseList {
+        // add copy to action
+        let copyToAction = UIAlertAction(title: "Copy to", style: .Default) { (UIAlertAction) -> Void in
             
-            alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
-            
-            let moveToAction = UIAlertAction(title: "Move to another list", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
-                
-                
-            })
-            alertSheet?.addAction(moveToAction)
             
         }
+        alert.addAction(copyToAction)
+        
+        // add move to action
+        
+        let moveToAction = UIAlertAction(title: "Move to", style: .Default) { (UIAlertAction) -> Void in
             
-        else {
-            
-            alertSheet = UIAlertController(title: vidTitle, message: "Create your first list", preferredStyle: UIAlertControllerStyle.Alert)
-            alertSheet?.addTextFieldWithConfigurationHandler({ (text:UITextField!) -> Void in
-                
-                
-                // do something with the code here
-            })
-            
-            let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
-                
-                
-                
-            })
-            
-            alertSheet?.addAction(saveAction)
             
         }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-        alertSheet?.addAction(cancelAction)
-        self.presentViewController(alertSheet!, animated: true, completion: nil)
+        alert.addAction(moveToAction)
+        
+        // add delete action
+        
+        let deleteAction = UIAlertAction(title: "Delete", style: .Destructive) { (UIAlertAction) -> Void in
+            
+            
+        }
+        alert.addAction(deleteAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
+        alert.addAction(cancelAction)
+        
+        
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     func addSingleTitleAlertHelper(success:Bool){
@@ -268,4 +264,18 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             self.presentViewController(alert, animated: true, completion: nil)
         }
     }
+    
+    func activityIndicatorAction(){
+        
+        if self.activityIndicator.hidden == false {
+            self.activityIndicator.hidden = true
+            self.activityIndicator.stopAnimating()
+        }
+        else {
+            self.activityIndicator.hidden = false
+            self.activityIndicator.startAnimating()
+        }
+        
+    }
+
 }

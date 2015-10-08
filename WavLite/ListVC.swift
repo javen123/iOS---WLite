@@ -29,7 +29,9 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
-        if PFUser.currentUser() == nil {
+        
+        self.tableView.reloadData()
+        if curUser == nil {
             self.tabBarController?.selectedIndex = 0
         }
     }
@@ -43,7 +45,7 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         if segue.identifier == "toDetailSegue"{
             let vc:DetailListVC = segue.destinationViewController as! DetailListVC
-            let indexPath = self.tableView.indexPathForSelectedRow()
+            let indexPath = self.tableView.indexPathForSelectedRow
             let videoList:PFObject = gParseList![indexPath!.row]
             vc.videos = videoList
         }

@@ -10,39 +10,40 @@ import Foundation
 import Parse
 import SwiftyJSON
 
+//Globals
+
 var gJson:JSON?
 var gParseList:[PFObject]?
-
+var curUser = PFUser.currentUser()
 
 class APIRequests {
     
    
     let yTMaxResults = 25
     let DEVELOPER_KEY:String = "AIzaSyD9kU-l10psPGVI0ntgVZmpOk6yZnP1urs"
-   
     
     func userYTListPull (subject:String) {
         
         // Set up your URL
-        let youtubeApi: String = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=\(subject)&maxResults=\(yTMaxResults)&key=\(DEVELOPER_KEY)"
-        var url: NSURL = NSURL(string: youtubeApi)!
+        let youtubeApi: String = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=\(subject)&&fields=items(id%2Csnippet)&key=\(DEVELOPER_KEY)"  
+        let url:NSURL = NSURL(string: youtubeApi)!
         
         // Create your request
-        var request: NSURLRequest = NSURLRequest(URL: url)
+        let request: NSURLRequest = NSURLRequest(URL: url)
         
         let queue:NSOperationQueue = NSOperationQueue()
         
         // Send the request asynchronously
-        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler:{ (response: NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             
             // Callback, parse the data and check for errors
             if data != nil && error == nil {
-                gJson = JSON(data:data)
+                gJson = JSON(data:data!)
                 
                 NSNotificationCenter.defaultCenter().postNotificationName("YTFINISHED", object: nil)
                 
             } else {
-                println("Error: \(error.localizedDescription)")
+                print("Error: \(error!.localizedDescription)")
                 
             }
         })
@@ -55,62 +56,57 @@ class APIRequests {
         // Set up your URL
         let youtubeApi: String = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(subject)&maxResults=\(yTMaxResults)&key=\(DEVELOPER_KEY)"
 
-        var url: NSURL = NSURL(string: youtubeApi)!
+        let url: NSURL = NSURL(string: youtubeApi)!
         
         // Create your request
-        var request: NSURLRequest = NSURLRequest(URL: url)
+        let request:NSURLRequest = NSURLRequest(URL: url)
         
         let queue:NSOperationQueue = NSOperationQueue()
         
         // Send the request asynchronously
-        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler:{ (response: NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             
             // Callback, parse the data and check for errors
             if data != nil && error == nil {
-                gJson = JSON(data:data)
+                gJson = JSON(data:data!)
                 
                 NSNotificationCenter.defaultCenter().postNotificationName("ULFINISHED", object: nil)
                 
             } else {
-                println("Error: \(error.localizedDescription)")
+                print("Error: \(error!.localizedDescription)")
                 
             }
         })
     }
 
-     
-    func parseLogOut(){
-        
-        PFUser.logOut()
-        
-    }
-    
     func grabListsFromParse(){
         
-        if PFUser.currentUser() != nil {
+        if curUser != nil {
             
             gParseList = nil
             
             let query = PFQuery(className: "Lists")
-            query.whereKey("createdBy", equalTo: PFUser.currentUser()!)
+            query.whereKey("createdBy", equalTo: curUser!)
             query.orderByAscending("myLists")
-            
-            query.findObjectsInBackgroundWithBlock({ (objects:[AnyObject]?, error:NSError?) -> Void in
+            query.findObjectsInBackgroundWithBlock({
                 
+                objects, error in
+            
                 if error != nil {
-                    println(error?.localizedDescription)
+                    print(error!.localizedDescription)
                 }
                 else {
-                    gParseList = objects as? [PFObject]
-                    println("Parse info: \(gParseList)")
+                    gParseList = objects! as [PFObject]
+                    print("Parse info: \(gParseList)")
                 }
             })
         }
         else {
-            println("user is nil")
+            print("user is nil")
             return
         }
     }
+
     
     func addUpdateItemToUserList(listId:String, newList:[String]) {
         
@@ -120,7 +116,7 @@ class APIRequests {
             object, error in
             
             if error != nil {
-                println(error?.localizedDescription)
+                print(error?.localizedDescription)
                
             }
             else if object != nil{
@@ -131,7 +127,7 @@ class APIRequests {
                         
                         success, error in
                         if error != nil {
-                            println(error!.localizedDescription)
+                            print(error!.localizedDescription)
                         }
                         else {
                             self.grabListsFromParse()
@@ -140,7 +136,7 @@ class APIRequests {
                 }
             }
             else {
-                println("Object is nil")
+                print("Object is nil")
                 
             }
         })
@@ -171,9 +167,36 @@ class APIRequests {
         })
     }
     
-    func removeVideoFromList(listId:String){
+    func createListTitle(listTitle:String, vidId:[String]?) {
         
+        //create list object
         
+        let newList = PFObject(className:"Lists")
+        newList["listTitle"] = listTitle
+        if let newId = vidId {
+            newList["myLists"] = newId
+        }
         
+        // create relation for list to use
+        
+        let relation = newList.relationForKey("createdBy")
+        relation.addObject(curUser!)
+        
+        newList.saveEventually {
+            
+            success, error in
+            if error != nil {
+                print(error?.localizedDescription)
+                
+            }
+            else if success == false {
+                print("something went wrong with Parse")
+                
+            }
+            else {
+                self.grabListsFromParse()
+                
+            }
+        }
     }
 }

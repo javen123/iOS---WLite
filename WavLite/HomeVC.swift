@@ -27,6 +27,10 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         
         let url = NSURL(string: "http://www.wavlite.com/api/videoPlayer.html")
         let request = NSURLRequest(URL: url!)
+        
+        
+        webView.sizeToFit()
+        webView.frame.insetInPlace(dx: 8, dy: 8)
         webView.loadRequest(request)
         
         //Add logout notification
@@ -99,7 +103,7 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     
     func logInViewController(logInController: PFLogInViewController, didFailToLogInWithError error: NSError?) {
         if error != nil {
-            println(error?.localizedDescription)
+            print(error?.localizedDescription)
         }
         else {
             self.dismissViewControllerAnimated(true, completion: nil)
@@ -116,21 +120,22 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     
         
     func logInHelper(){
-        
+        print(PFUser.currentUser())
         if PFUser.currentUser() == nil {
             
             //clean current lists
             gJson = nil
             gParseList?.removeAll(keepCapacity: true)
-            var loginVC = PFLogInViewController()
             
-            loginVC.fields = (PFLogInFields.UsernameAndPassword
-                | PFLogInFields.LogInButton
-                | PFLogInFields.SignUpButton
-                | PFLogInFields.PasswordForgotten
-                | PFLogInFields.DismissButton
-//                | PFLogInFields.Facebook)
-                | PFLogInFields.Twitter)
+            let loginVC = PFLogInViewController()
+            
+            loginVC.fields = [PFLogInFields.UsernameAndPassword,
+                PFLogInFields.LogInButton,
+                PFLogInFields.SignUpButton,
+                PFLogInFields.PasswordForgotten,
+                PFLogInFields.DismissButton,
+//               PFLogInFields.Facebook),
+                PFLogInFields.Twitter]
             
             //            loginVC.facebookPermissions = ["public_profile", "email"]
             
@@ -140,8 +145,7 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
             
             //signup controller
             
-            loginVC.signUpController?.fields = (PFSignUpFields.UsernameAndPassword
-                | PFSignUpFields.Email)
+            loginVC.signUpController?.fields = ([PFSignUpFields.UsernameAndPassword, PFSignUpFields.Email])
             loginVC.signUpController?.signUpView?.logo = logoView
             loginVC.signUpController?.delegate = self
             

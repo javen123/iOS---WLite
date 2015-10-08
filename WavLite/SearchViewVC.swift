@@ -46,8 +46,10 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     }
     
     override func viewWillAppear(animated: Bool) {
+        
         tableView.hidden = true
-        activityIndicator.startAnimating()
+        self.activityIndicator.hidden = true
+        self.activityIndicatorAction()
         API.genericYtListPull("top+music")
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "convertYtApiInfoToCell:", name: "ULFINISHED", object: nil)
     }
@@ -78,8 +80,6 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
             let title = data.videoTitle
             cell.ytCellTitle.text = title
             tableView.hidden = false
-            activityIndicator.stopAnimating()
-            
         }
         return cell
     }
@@ -96,7 +96,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         
         self.vidId = ytAPILists[indexPath.row].videoId
         
-        if count(self.vidId!) <= 11 {
+        if (self.vidId!).characters.count <= 11 {
             self.playerView.loadVideoID(self.vidId!)
             
         }
@@ -131,7 +131,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         
         
         // implement alerts
-        addTitleToListSheet(vidId!)
+        addTitleToListSheet(vidId!, vidTitle: vidTitle)
         
     }
     
@@ -145,9 +145,9 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     
     func convertYtApiInfoToCell(notification:NSNotification){
         
-        for (key:String, value:JSON) in gJson!["items"] {
+        for (key, value): (String, JSON) in gJson!["items"] {
            
-            let id:String
+            var id:String
             if value["id"]["playlistId"] != nil{
                 id = value["id"]["playlistId"].stringValue
             }
@@ -171,7 +171,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         
-        if count(searchText) > 3 {
+        if searchText.characters.count > 3 {
             let tmp = searchText.stringByReplacingOccurrencesOfString(" ", withString: "+")
             ytAPILists.removeAll(keepCapacity: false)
             API.genericYtListPull(tmp)
@@ -180,24 +180,26 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     
     //MARK: Alerts
     
-    func addTitleToListSheet(vidTitle: String) {
+    func addTitleToListSheet(vidId:String, vidTitle: String) {
         
         var alertSheet:UIAlertController?
+        var id:String!
         
         if let objects = gParseList {
             
             alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
             
+            
+            
             for x in objects{
-                let id = x.objectId
+                id = x.objectId
                 var myLists:[String] = x["myLists"] as! [String]
                 let title:String = x.valueForKey("listTitle") as! String
                 let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
                     
-                    myLists.append(self.vidId!)
-                    print(myLists)
-                    let add = APIRequests()
-                    add.addUpdateItemToUserList(id!, newList: myLists)
+                    myLists.append(vidId)
+                    
+                    self.API.addUpdateItemToUserList(id!, newList: myLists)
                     
                     //TODO:Figue out synchronous call before showing alert
                     
@@ -209,22 +211,16 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         }
         else {
             
-            alertSheet = UIAlertController(title: vidTitle, message: "Create your first list", preferredStyle: UIAlertControllerStyle.Alert)
-            alertSheet?.addTextFieldWithConfigurationHandler({ (text:UITextField!) -> Void in
-                
-                
-                // do something with the code here
-            })
-            
-            let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
-                
-                
-                
-            })
-            
-            alertSheet?.addAction(saveAction)
+            self.createList([self.vidId!])
             
         }
+        
+        let createAction = UIAlertAction(title: "Create New List", style: UIAlertActionStyle.Destructive, handler: { (UIAlertAction) -> Void in
+            
+            self.createList([self.vidId!])
+            
+        })
+        alertSheet?.addAction(createAction)
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         alertSheet?.addAction(cancelAction)
         self.presentViewController(alertSheet!, animated: true, completion: nil)
@@ -246,5 +242,49 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
             alert.addAction(cancelAction)
             self.presentViewController(alert, animated: true, completion: nil)
         }
+    }
+    
+    func createList (newId:[String]) {
+        
+        var aTextField:UITextField?
+        
+        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
+            
+            aTextField = text
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
+            
+            var success:Bool!
+            if let inputTitle = aTextField?.text {
+                success = true
+                self.API.createListTitle(inputTitle, vidId: newId)
+            }
+            else {
+                success = false
+            }
+            self.addSingleTitleAlertHelper(success)
+        }
+        
+        alert.addAction(saveAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func activityIndicatorAction(){
+        
+        if self.activityIndicator.hidden == false {
+            self.activityIndicator.hidden = true
+            self.activityIndicator.stopAnimating()
+        }
+        else {
+            self.activityIndicator.hidden = false
+            self.activityIndicator.startAnimating()
+        }
+        
     }
 }
