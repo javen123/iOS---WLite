@@ -225,7 +225,7 @@
                     <connections>
                         <outlet property="noListLabel" destination="ugF-w2-6si" id="RZu-4U-U51"/>
                         <outlet property="tableView" destination="svs-BY-pg3" id="DGO-kP-twd"/>
-                        <segue destination="a7U-cd-VPk" kind="modal" identifier="toDetailSegue" modalTransitionStyle="flipHorizontal" id="OJV-2e-Ush"/>
+                        <segue destination="a7U-cd-VPk" kind="show" identifier="toDetailSegue" id="OJV-2e-Ush"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>

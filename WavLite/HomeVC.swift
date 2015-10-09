@@ -11,33 +11,40 @@ import Parse
 import ParseUI
 import SwiftyJSON
 
-class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate {
+class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, LiquidFloatingActionButtonDataSource, LiquidFloatingActionButtonDelegate {
     
    
     @IBOutlet var webView:UIWebView!
     
+    //Liquid cells setup
+    var cells:[LiquidFloatingCell] = []
+    var floatingCell: LiquidFloatingActionButton!
+    var floatingBtnImg:UIImage!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // load PFLogin
-        
-        logInHelper()
         
         // Load webview
         
         let url = NSURL(string: "http://www.wavlite.com/api/videoPlayer.html")
         let request = NSURLRequest(URL: url!)
         
-        
+          
         webView.sizeToFit()
         webView.frame.insetInPlace(dx: 8, dy: 8)
         webView.loadRequest(request)
         
-        //Add logout notification
+        //TODO: Add logout notification
         
+        // Liquid floating button add
+        setupLiquidTouch()
     }
     
     override func viewWillAppear(animated: Bool) {
+        logInHelper()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
         
         logInHelper()
         
@@ -54,8 +61,10 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         // Dispose of any resources that can be recreated.
     }
     
+    //MARK: Login funcs
     func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
         
+        curUser = user
         let API = APIRequests()
         API.grabListsFromParse()
        
@@ -120,14 +129,16 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     
         
     func logInHelper(){
-        print(PFUser.currentUser())
-        if PFUser.currentUser() == nil {
+        
+        print("CurUser is: \(curUser)")
+        
+        if curUser == nil {
+            
+            let loginVC = PFLogInViewController()
             
             //clean current lists
             gJson = nil
             gParseList?.removeAll(keepCapacity: true)
-            
-            let loginVC = PFLogInViewController()
             
             loginVC.fields = [PFLogInFields.UsernameAndPassword,
                 PFLogInFields.LogInButton,
@@ -157,4 +168,61 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
             return
         }
     }
+    
+    //MARK: LiquidBtn funcs
+    
+    func numberOfCells(liquidFloatingActionButton: LiquidFloatingActionButton) -> Int {
+        return self.cells.count
+    }
+    func cellForIndex(index: Int) -> LiquidFloatingCell {
+        return self.cells[index]
+    }
+    
+    func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        if index == 0 {
+           createNewList()
+        }
+        liquidFloatingActionButton.close()
+    }
+    
+    func setupLiquidTouch () {
+        
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        
+        liquidBtn.delegate = self
+        liquidBtn.dataSource = self
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        
+        self.cells.append(addNewListCell)
+        
+        self.view.addSubview(liquidBtn)
+    }
+    
+    func createNewList () {
+        
+        var aTextField:UITextField?
+        
+        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
+            
+            aTextField = text
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
+            let API = APIRequests()
+            
+            if let inputTitle = aTextField?.text {
+                
+                API.createListTitle(inputTitle, vidId: nil)
+            }
+        }
+        
+        alert.addAction(saveAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+
 }

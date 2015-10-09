@@ -14,7 +14,7 @@ import SwiftyJSON
 
 var gJson:JSON?
 var gParseList:[PFObject]?
-var curUser = PFUser.currentUser()
+var curUser:PFUser?
 
 class APIRequests {
     
@@ -199,4 +199,5 @@ class APIRequests {
             }
         }
     }
+    
 }

@@ -14,6 +14,14 @@
 		8F4394021BA86D7600218B64 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4394011BA86D7600218B64 /* SearchCell.swift */; };
 		8F688AC31B7277D400690575 /* DetailListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F688AC21B7277D400690575 /* DetailListVC.swift */; };
 		8F688AC51B7277EE00690575 /* DetailListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F688AC41B7277EE00690575 /* DetailListCell.swift */; };
+		8F6963281BC6C19D003B9E72 /* ArrayEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963201BC6C19D003B9E72 /* ArrayEx.swift */; settings = {ASSET_TAGS = (); }; };
+		8F6963291BC6C19D003B9E72 /* CGPointEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963211BC6C19D003B9E72 /* CGPointEx.swift */; settings = {ASSET_TAGS = (); }; };
+		8F69632A1BC6C19D003B9E72 /* CGRectEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963221BC6C19D003B9E72 /* CGRectEx.swift */; settings = {ASSET_TAGS = (); }; };
+		8F69632B1BC6C19D003B9E72 /* LiquidFloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963231BC6C19D003B9E72 /* LiquidFloatingActionButton.swift */; settings = {ASSET_TAGS = (); }; };
+		8F69632C1BC6C19D003B9E72 /* LiquidUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963241BC6C19D003B9E72 /* LiquidUtil.swift */; settings = {ASSET_TAGS = (); }; };
+		8F69632D1BC6C19D003B9E72 /* LiquittableCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963251BC6C19D003B9E72 /* LiquittableCircle.swift */; settings = {ASSET_TAGS = (); }; };
+		8F69632E1BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963261BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift */; settings = {ASSET_TAGS = (); }; };
+		8F69632F1BC6C19D003B9E72 /* UIColorEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963271BC6C19D003B9E72 /* UIColorEx.swift */; settings = {ASSET_TAGS = (); }; };
 		8F7ED0971B7020F9004A4663 /* VideoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7ED0961B7020F9004A4663 /* VideoItem.swift */; };
 		8FA98D861BA0999800B428C7 /* ProfileVCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA98D851BA0999800B428C7 /* ProfileVCViewController.swift */; };
 		8FB7EA4B1B6833660088B6BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA4A1B6833660088B6BC /* AppDelegate.swift */; };
@@ -47,6 +55,14 @@
 		8F4394011BA86D7600218B64 /* SearchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		8F688AC21B7277D400690575 /* DetailListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailListVC.swift; sourceTree = "<group>"; };
 		8F688AC41B7277EE00690575 /* DetailListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailListCell.swift; sourceTree = "<group>"; };
+		8F6963201BC6C19D003B9E72 /* ArrayEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayEx.swift; sourceTree = "<group>"; };
+		8F6963211BC6C19D003B9E72 /* CGPointEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPointEx.swift; sourceTree = "<group>"; };
+		8F6963221BC6C19D003B9E72 /* CGRectEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGRectEx.swift; sourceTree = "<group>"; };
+		8F6963231BC6C19D003B9E72 /* LiquidFloatingActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiquidFloatingActionButton.swift; sourceTree = "<group>"; };
+		8F6963241BC6C19D003B9E72 /* LiquidUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiquidUtil.swift; sourceTree = "<group>"; };
+		8F6963251BC6C19D003B9E72 /* LiquittableCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiquittableCircle.swift; sourceTree = "<group>"; };
+		8F6963261BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleCircleLiquidEngine.swift; sourceTree = "<group>"; };
+		8F6963271BC6C19D003B9E72 /* UIColorEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorEx.swift; sourceTree = "<group>"; };
 		8F7ED0961B7020F9004A4663 /* VideoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoItem.swift; sourceTree = "<group>"; };
 		8FA98D851BA0999800B428C7 /* ProfileVCViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileVCViewController.swift; sourceTree = "<group>"; };
 		8FB5B6711BA8C11800EAA9F8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
@@ -100,6 +116,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8F69631F1BC6C132003B9E72 /* LiquidFloatingActionButton */ = {
+			isa = PBXGroup;
+			children = (
+				8F6963201BC6C19D003B9E72 /* ArrayEx.swift */,
+				8F6963211BC6C19D003B9E72 /* CGPointEx.swift */,
+				8F6963221BC6C19D003B9E72 /* CGRectEx.swift */,
+				8F6963231BC6C19D003B9E72 /* LiquidFloatingActionButton.swift */,
+				8F6963241BC6C19D003B9E72 /* LiquidUtil.swift */,
+				8F6963251BC6C19D003B9E72 /* LiquittableCircle.swift */,
+				8F6963261BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift */,
+				8F6963271BC6C19D003B9E72 /* UIColorEx.swift */,
+			);
+			name = LiquidFloatingActionButton;
+			sourceTree = "<group>";
+		};
 		8F7ED0951B7020DE004A4663 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +164,7 @@
 		8FB7EA471B6833660088B6BC /* WavLite */ = {
 			isa = PBXGroup;
 			children = (
+				8F69631F1BC6C132003B9E72 /* LiquidFloatingActionButton */,
 				8F7ED0951B7020DE004A4663 /* Data */,
 				8FB7EA6C1B68337A0088B6BC /* VCs */,
 				8FB7EA501B6833660088B6BC /* Main.storyboard */,
@@ -349,14 +381,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F688AC31B7277D400690575 /* DetailListVC.swift in Sources */,
+				8F69632A1BC6C19D003B9E72 /* CGRectEx.swift in Sources */,
+				8F69632B1BC6C19D003B9E72 /* LiquidFloatingActionButton.swift in Sources */,
 				8F4394021BA86D7600218B64 /* SearchCell.swift in Sources */,
+				8F69632E1BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift in Sources */,
 				8F7ED0971B7020F9004A4663 /* VideoItem.swift in Sources */,
+				8F6963291BC6C19D003B9E72 /* CGPointEx.swift in Sources */,
 				8F688AC51B7277EE00690575 /* DetailListCell.swift in Sources */,
+				8F69632F1BC6C19D003B9E72 /* UIColorEx.swift in Sources */,
 				8F4394001BA8677000218B64 /* SearchViewVC.swift in Sources */,
 				8FDEDEE31B695A2900397A5D /* APIRequests.swift in Sources */,
 				8FB7EA701B68339A0088B6BC /* ListVC.swift in Sources */,
+				8F69632C1BC6C19D003B9E72 /* LiquidUtil.swift in Sources */,
 				8FB7EA4B1B6833660088B6BC /* AppDelegate.swift in Sources */,
+				8F69632D1BC6C19D003B9E72 /* LiquittableCircle.swift in Sources */,
 				8FA98D861BA0999800B428C7 /* ProfileVCViewController.swift in Sources */,
+				8F6963281BC6C19D003B9E72 /* ArrayEx.swift in Sources */,
 				8FB7EA741B6833CA0088B6BC /* ListCell.swift in Sources */,
 				8FB7EA6E1B68338E0088B6BC /* HomeVC.swift in Sources */,
 				8F1369FC1BAB4FDE00C0F8FF /* Reachability.swift in Sources */,

@@ -11,7 +11,7 @@ import SwiftyJSON
 import Swift_YouTube_Player
 
 
-class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, LiquidFloatingActionButtonDataSource, LiquidFloatingActionButtonDelegate {
     
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -20,6 +20,11 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     @IBOutlet weak var playerView: YouTubePlayerView!
     
     var vidId:String?
+    
+    //Liquid cells setup
+    var cells:[LiquidFloatingCell] = []
+    var floatingCell: LiquidFloatingActionButton!
+    var floatingBtnImg:UIImage!
    
     var ytAPILists:[VideoItem] = [VideoItem]()
     var playerActive = false
@@ -38,10 +43,18 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         
         self.playerView.hidden = true
         
+        // Liquid floating button add
+        setupLiquidTouch()
+        
         //tableview long press aet up
         
         let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
         self.tableView.addGestureRecognizer(longPress)
+        
+        //activity indecator setup
+        self.activityIndicator.color = UIColor.whiteColor()
+        self.activityIndicator.hidden = true
+        self.activityIndicatorAction()
 
     }
     
@@ -80,11 +93,14 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
             let title = data.videoTitle
             cell.ytCellTitle.text = title
             tableView.hidden = false
+            self.activityIndicator.hidden = false
+            self.activityIndicatorAction()
         }
         return cell
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return ytAPILists.count
     }
     
@@ -129,15 +145,16 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         vidId = cell.videoId
         let vidTitle = cell.videoTitle
         
-        
-        // implement alerts
-        addTitleToListSheet(vidId!, vidTitle: vidTitle)
-        
+        if state == .Began {
+            // implement alerts
+            addTitleToListSheet(vidId!, vidTitle: vidTitle)
+        }
     }
     
     @IBAction func logOutBtnPressed(sender: AnyObject) {
         
         PFUser.logOut()
+        curUser = nil
         self.tabBarController?.selectedIndex = 0
     }
     
@@ -176,6 +193,10 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
             ytAPILists.removeAll(keepCapacity: false)
             API.genericYtListPull(tmp)
         }
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
     
     //MARK: Alerts
@@ -278,13 +299,71 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     func activityIndicatorAction(){
         
         if self.activityIndicator.hidden == false {
-            self.activityIndicator.hidden = true
             self.activityIndicator.stopAnimating()
+            self.activityIndicator.hidesWhenStopped = true
         }
         else {
+            self.activityIndicator.hidden = true
             self.activityIndicator.hidden = false
             self.activityIndicator.startAnimating()
         }
         
     }
+    
+    //MARK: LiquidBtn funcs
+    
+    func numberOfCells(liquidFloatingActionButton: LiquidFloatingActionButton) -> Int {
+        return self.cells.count
+    }
+    func cellForIndex(index: Int) -> LiquidFloatingCell {
+        return self.cells[index]
+    }
+    
+    func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        if index == 0 {
+            createNewList()
+        }
+        liquidFloatingActionButton.close()
+    }
+    
+    func setupLiquidTouch () {
+        
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        
+        liquidBtn.delegate = self
+        liquidBtn.dataSource = self
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        
+        self.cells.append(addNewListCell)
+        
+        self.view.addSubview(liquidBtn)
+    }
+    
+    func createNewList () {
+        
+        var aTextField:UITextField?
+        
+        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
+            
+            aTextField = text
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
+            let API = APIRequests()
+            
+            if let inputTitle = aTextField?.text {
+                
+                API.createListTitle(inputTitle, vidId: nil)
+            }
+        }
+        
+        alert.addAction(saveAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+
 }

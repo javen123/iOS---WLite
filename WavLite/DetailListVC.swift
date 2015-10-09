@@ -12,7 +12,7 @@ import SwiftyJSON
 import Swift_YouTube_Player
 
 
-class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, LiquidFloatingActionButtonDelegate, LiquidFloatingActionButtonDataSource {
     
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -20,6 +20,11 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     @IBOutlet weak var playerView: YouTubePlayerView!
     @IBOutlet weak var navBar: UINavigationBar!
     
+    //Liquid cells setup
+    var cells:[LiquidFloatingCell] = []
+    var floatingCell: LiquidFloatingActionButton!
+    var floatingBtnImg:UIImage!
+
     
     var vidId:String?
     var videos:PFObject!
@@ -34,23 +39,30 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        convertPFObjectToYouTubeList(videos)
+//        convertPFObjectToYouTubeList(videos)
         vidIds = convertPFObjectToYouTubeList(videos)
         self.navBar.topItem?.title = videos["listTitle"] as? String
         
         self.playerView.hidden = true
+        
+        // Liquid floating button add
+        setupLiquidTouch()
         
         //tableview long press aet up
         
         let longPress = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
         self.tableView.addGestureRecognizer(longPress)
         
+        // activity indicator 
+        self.activityIndicator.color = UIColor.whiteColor()
+        self.activityIndicator.hidden = true
+        self.activityIndicatorAction()
+        
     }
     
     override func viewWillAppear(animated: Bool) {
         tableView.hidden = true
-        self.activityIndicatorAction()
-        API.userYTListPull(vidIds)
+        self.API.userYTListPull(vidIds)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "convertYtApiInfoToCell:", name: "YTFINISHED", object: nil)
         
     }
@@ -66,6 +78,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     @IBAction func logOutBtnPressed(sender: AnyObject) {
         
         PFUser.logOut()
+        curUser = nil
         self.dismissViewControllerAnimated(true, completion: nil)
         self.tabBarController?.selectedIndex = 0
         
@@ -98,9 +111,10 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         let title = data.videoTitle
         cell.detailTitleTextLabel.text = title
        
-       
-        tableView.hidden = false
+        self.activityIndicator.hidden = false
         self.activityIndicatorAction()
+        tableView.hidden = false
+        
         return cell
     }
     
@@ -139,9 +153,11 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         if editingStyle == UITableViewCellEditingStyle.Delete {
             
             self.vidInfo.removeAtIndex(indexPath.row)
-            
+            let ids = convertVidInfoToYTApiCallList(vidInfo)
+            let listId:String = self.videos.objectId!
 //            let api = APIRequests()
-//            api.addUpdateItemToUserList()
+            print(vidInfo)
+            self.API.addUpdateItemToUserList(listId, newList: ids)
             self.tableView.reloadData()
         }
         
@@ -160,14 +176,16 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     }
     
     func handleLongPress(press: UILongPressGestureRecognizer){
+        
         let state = press.state
         let locationView = press.locationInView(self.tableView)
         let indexPath = self.tableView.indexPathForRowAtPoint(locationView)
         let cell = vidInfo[indexPath!.row]
         vidId = cell.videoId
         let vidTitle = cell.videoTitle
-        
-        self.editTitleInList(vidTitle, id:vidId!)
+        if state == .Began {
+            self.editTitleInList(vidTitle, id:vidId!)
+        }
     }
 
 
@@ -190,12 +208,27 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         return temp
     }
     
+    func convertVidInfoToYTApiCallList (items:[VideoItem]) -> [String] {
+        
+        var temp:[String] = []
+        
+        for x in items {
+            let y = x.videoId
+            temp.append(y)
+        }
+        if temp.count > 1 {
+            temp.joinWithSeparator(",")
+        }
+        
+        return temp
+    }
+    
     func convertYtApiInfoToCell(notification:NSNotification){
         
         for (_, value): (String, JSON) in gJson!["items"] {
             
             let items = value
-            print(items)
+            
             let id = items["id"].stringValue
             
             print("Vid id is : \(id)")
@@ -215,13 +248,20 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     func editTitleInList(vidTitle: String, id:String) {
         
-        let alert = UIAlertController(title: vidTitle, message: "Edit this item?", preferredStyle: UIAlertControllerStyle.Alert)
+         let alert = UIAlertController(title: vidTitle, message: "Edit this item?", preferredStyle: .Alert)
+        
         
         // add copy to action
+        
+        
         let copyToAction = UIAlertAction(title: "Copy to", style: .Default) { (UIAlertAction) -> Void in
             
-            
+            if self.presentedViewController == nil {
+                print("it is nil")
+                self.addTitleToListSheet(id, vidTitle: vidTitle)
+            }
         }
+        
         alert.addAction(copyToAction)
         
         // add move to action
@@ -238,13 +278,14 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             
             
         }
+        
         alert.addAction(deleteAction)
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
         alert.addAction(cancelAction)
         
+        self.presentViewController(alert, animated: true, completion:nil)
         
-        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     func addSingleTitleAlertHelper(success:Bool){
@@ -277,5 +318,92 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         }
         
     }
+    
+    // Copy Alert helper
+    
+    func addTitleToListSheet(vidId:String, vidTitle: String) {
+        
+        
+        var id:String!
+        
+        if let objects = gParseList {
+            
+            let alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            
+            for x in objects{
+                id = x.objectId
+                var myLists:[String] = x["myLists"] as! [String]
+                let title:String = x.valueForKey("listTitle") as! String
+                let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
+                    
+                    myLists.append(vidId)
+                    
+                    self.API.addUpdateItemToUserList(id!, newList: myLists)
+                    
+                    //TODO:Figue out synchronous call before showing alert
+                    
+                    self.addSingleTitleAlertHelper(true)
+                })
+                
+                alertSheet.addAction(action)
+            }
+        }
+    }
 
+    
+    //MARK: LiquidBtn funcs
+    
+    func numberOfCells(liquidFloatingActionButton: LiquidFloatingActionButton) -> Int {
+        return self.cells.count
+    }
+    func cellForIndex(index: Int) -> LiquidFloatingCell {
+        return self.cells[index]
+    }
+    
+    func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        if index == 0 {
+            createNewList()
+        }
+        liquidFloatingActionButton.close()
+    }
+    
+    func setupLiquidTouch () {
+        
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        
+        liquidBtn.delegate = self
+        liquidBtn.dataSource = self
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        
+        self.cells.append(addNewListCell)
+        
+        self.view.addSubview(liquidBtn)
+    }
+    
+    func createNewList () {
+        
+        var aTextField:UITextField?
+        
+        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
+            
+            aTextField = text
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
+            
+            if let inputTitle = aTextField?.text {
+                
+                self.API.createListTitle(inputTitle, vidId: nil)
+            }
+        }
+        
+        alert.addAction(saveAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
 }

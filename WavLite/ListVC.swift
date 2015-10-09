@@ -10,7 +10,7 @@ import UIKit
 import Parse
 
 
-class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, LiquidFloatingActionButtonDataSource, LiquidFloatingActionButtonDelegate {
     
     @IBOutlet weak var noListLabel: UILabel!
     var tableList = [String]()
@@ -18,12 +18,20 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
     
     var hasList = false
+    
+    //Liquid cells setup
+    var cells:[LiquidFloatingCell] = []
+    var floatingCell: LiquidFloatingActionButton!
+    var floatingBtnImg:UIImage!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         isDataAvailable()
         self.tableView.reloadData()
+        
+        // Liquid floating button add
+        setupLiquidTouch()
         
         
     }
@@ -54,7 +62,7 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBAction func btn_logout_pressed(sender: AnyObject) {
         
         PFUser.logOut()
-        
+        curUser = nil
         self.tabBarController?.selectedIndex = 0
     }
     
@@ -75,6 +83,8 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
 
     }
+    
+    //MARK: Tableview funcs
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         
@@ -148,4 +158,62 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             
         }
     }
+    
+    //MARK: LiquidBtn funcs
+    
+    func numberOfCells(liquidFloatingActionButton: LiquidFloatingActionButton) -> Int {
+        return self.cells.count
+    }
+    func cellForIndex(index: Int) -> LiquidFloatingCell {
+        return self.cells[index]
+    }
+    
+    func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        if index == 0 {
+            createNewList()
+        }
+        liquidFloatingActionButton.close()
+    }
+    
+    func setupLiquidTouch () {
+        
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        
+        liquidBtn.delegate = self
+        liquidBtn.dataSource = self
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        
+        self.cells.append(addNewListCell)
+        
+        self.view.addSubview(liquidBtn)
+    }
+    
+    func createNewList () {
+        
+        var aTextField:UITextField?
+        
+        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
+            
+            aTextField = text
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
+            let API = APIRequests()
+            
+            if let inputTitle = aTextField?.text {
+                
+                API.createListTitle(inputTitle, vidId: nil)
+            }
+        }
+        
+        alert.addAction(saveAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+
 }
