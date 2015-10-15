@@ -67,7 +67,6 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
     }
     
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -144,23 +143,14 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         let tap = UITapGestureRecognizer(target: self, action: "handleTap:")
         self.view.addGestureRecognizer(tap)
         
-
-        
     }
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         if editingStyle == UITableViewCellEditingStyle.Delete {
             
-            self.vidInfo.removeAtIndex(indexPath.row)
-            let ids = convertVidInfoToYTApiCallList(vidInfo)
-            let listId:String = self.videos.objectId!
-//            let api = APIRequests()
-            print(vidInfo)
-            self.API.addUpdateItemToUserList(listId, newList: ids)
-            self.tableView.reloadData()
+            self.confirmDeleteOfVideo(indexPath.row)
         }
-        
     }
     
     
@@ -184,7 +174,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         vidId = cell.videoId
         let vidTitle = cell.videoTitle
         if state == .Began {
-            self.editTitleInList(vidTitle, id:vidId!)
+            self.editTitleInList(vidTitle, id:vidId!, index:(indexPath!.row))
         }
     }
 
@@ -246,20 +236,17 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     
     //MARK: Alerts
     
-    func editTitleInList(vidTitle: String, id:String) {
+    func editTitleInList(vidTitle: String, id:String, index:Int) {
         
-         let alert = UIAlertController(title: vidTitle, message: "Edit this item?", preferredStyle: .Alert)
+         var alert = UIAlertController(title: vidTitle, message: "Edit this item?", preferredStyle: .Alert)
         
         
         // add copy to action
         
-        
         let copyToAction = UIAlertAction(title: "Copy to", style: .Default) { (UIAlertAction) -> Void in
             
-            if self.presentedViewController == nil {
-                print("it is nil")
-                self.addTitleToListSheet(id, vidTitle: vidTitle)
-            }
+            alert = self.addTitleToListSheet(id, vidTitle: vidTitle)
+            self.presentViewController(alert, animated: true, completion: nil)
         }
         
         alert.addAction(copyToAction)
@@ -268,6 +255,8 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
         let moveToAction = UIAlertAction(title: "Move to", style: .Default) { (UIAlertAction) -> Void in
             
+            alert = self.moveTitleToListSheet(id, vidTitle: vidTitle, index: index)
+            self.presentViewController(alert, animated: true, completion: nil)
             
         }
         alert.addAction(moveToAction)
@@ -288,6 +277,26 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
     }
     
+    func confirmDeleteOfVideo(index:Int){
+        
+        let alert = UIAlertController(title: "Are you Sure?", message: "Your video will be deleted", preferredStyle: UIAlertControllerStyle.Alert)
+        let deleteAction = UIAlertAction(title: "Delete", style: .Destructive) { (UIAlertAction) -> Void in
+            
+            self.vidInfo.removeAtIndex(index)
+            let ids = self.convertVidInfoToYTApiCallList(self.vidInfo)
+            let listId:String = self.videos.objectId!
+            self.API.addUpdateItemToUserList(listId, newList: ids)
+            self.tableView.reloadData()
+            
+            
+        }
+        let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        self.presentViewController(alert, animated: true, completion: nil)
+
+    }
+    
     func addSingleTitleAlertHelper(success:Bool){
         
         if success {
@@ -305,30 +314,17 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             self.presentViewController(alert, animated: true, completion: nil)
         }
     }
-    
-    func activityIndicatorAction(){
-        
-        if self.activityIndicator.hidden == false {
-            self.activityIndicator.hidden = true
-            self.activityIndicator.stopAnimating()
-        }
-        else {
-            self.activityIndicator.hidden = false
-            self.activityIndicator.startAnimating()
-        }
-        
-    }
-    
+  
     // Copy Alert helper
     
-    func addTitleToListSheet(vidId:String, vidTitle: String) {
+    func addTitleToListSheet(vidId:String, vidTitle: String) -> UIAlertController {
         
-        
+        var alertSheet:UIAlertController!
         var id:String!
         
         if let objects = gParseList {
             
-            let alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
             
             for x in objects{
                 id = x.objectId
@@ -348,8 +344,60 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
                 alertSheet.addAction(action)
             }
         }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Destructive, handler: nil)
+        alertSheet.addAction(cancelAction)
+        
+        return alertSheet
+    }
+    
+    // Move title to another list
+    
+    func moveTitleToListSheet(vidId:String, vidTitle: String, index:Int) -> UIAlertController {
+        
+        var alertSheet:UIAlertController!
+        var id:String!
+        
+        //define removal func for curn list id
+        func removeVIDFromCurrentList(){
+            self.vidInfo.removeAtIndex(index)
+            let ids = convertVidInfoToYTApiCallList(vidInfo)
+            let listId:String = self.videos.objectId!
+            self.API.addUpdateItemToUserList(listId, newList: ids)
+            self.tableView.reloadData()
+        }
+        
+        if let objects = gParseList {
+            
+            alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            
+            for x in objects{
+                id = x.objectId
+                var myLists:[String] = x["myLists"] as! [String]
+                let title:String = x.valueForKey("listTitle") as! String
+                let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
+                    
+                    removeVIDFromCurrentList()
+                    myLists.append(vidId)
+                    
+                    self.API.addUpdateItemToUserList(id!, newList: myLists)
+                    
+                    //TODO:Figue out synchronous call before showing alert
+                    
+                    self.addSingleTitleAlertHelper(true)
+                })
+                
+                alertSheet.addAction(action)
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Destructive, handler: nil)
+        alertSheet.addAction(cancelAction)
+        
+        return alertSheet
     }
 
+    
     
     //MARK: LiquidBtn funcs
     
@@ -406,4 +454,17 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    
+    func activityIndicatorAction(){
+        
+        if self.activityIndicator.hidden == false {
+            self.activityIndicator.hidden = true
+            self.activityIndicator.stopAnimating()
+        }
+        else {
+            self.activityIndicator.hidden = false
+            self.activityIndicator.startAnimating()
+        }
+        
+    }
 }

@@ -276,7 +276,7 @@
                                     <constraint firstAttribute="height" constant="40" id="mkV-Cz-e1t"/>
                                 </constraints>
                             </activityIndicatorView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="GJn-wv-GH1">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="GJn-wv-GH1">
                                 <rect key="frame" x="0.0" y="64" width="600" height="531"/>
                                 <animations/>
                                 <color key="backgroundColor" red="0.10588235294117647" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="calibratedRGB"/>
