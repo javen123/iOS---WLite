@@ -31,6 +31,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         PFTwitterUtils.initializeWithConsumerKey("r7cJ69aO0Y7LaZuR6g8DmzBpJ", consumerSecret: "AvCnihJJ0PjbvcjAM8hCjG9xxZjhcrSypJyP7bUSprInQyle3Y")
         
+        let reachability = Reachability.reachabilityForInternetConnection()
+        reachability?.startNotifier()
+        
         
         return true
     }

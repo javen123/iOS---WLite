@@ -10,21 +10,36 @@ import UIKit
 import Parse
 import ParseUI
 import SwiftyJSON
+import WebKit
 
 class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, LiquidFloatingActionButtonDataSource, LiquidFloatingActionButtonDelegate {
     
    
     @IBOutlet var webView:UIWebView!
+    @IBOutlet weak var container: UIView!
     
+    var aWebView:WKWebView!
     //Liquid cells setup
     var cells:[LiquidFloatingCell] = []
     var floatingCell: LiquidFloatingActionButton!
     var floatingBtnImg:UIImage!
     
+    let reachability = Reachability.reachabilityForInternetConnection()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //check internet connection
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "noConnection:", name: ReachabilityChangedNotification, object: reachability)
+        
+        
         // Load webview
+        
+        self.aWebView = WKWebView()
+        container.addSubview(self.aWebView)
+        let frame = CGRectMake(0, 0, container.bounds.width, container.bounds.height)
+        self.aWebView.frame = frame
         
         let url = NSURL(string: "http://www.wavlite.com/api/videoPlayer.html")
         let request = NSURLRequest(URL: url!)
@@ -38,6 +53,15 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         
         // Liquid floating button add
         setupLiquidTouch()
+    }
+    
+    func noConnection(note:NSNotification){
+        
+        let curReach = note.object as! Reachability
+        if curReach.isReachable() == false {
+            let alert = UIAlertController(title: "Oops", message: "you need an internet connection to properly use this app", preferredStyle: .Alert)
+                self.presentViewController(alert, animated: true, completion: nil)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -110,9 +134,37 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
+    @IBAction func btngenrePressed(sender: UIButton) {
+        
+        // 0 rock 1 jazz 2 hip 3 country blues 4 r&b 5
+        var key:String!
+        
+        switch sender.tag {
+        case 0:
+           key = "top+rock+hits"
+        case 1:
+            key = "top+jazz+hits"
+        case 2:
+            key = "top+hip+hop+hits"
+        case 3:
+            key = "top+country+hits"
+        case 4:
+            key = "top+blues+hits"
+        default:
+            key = "top+r&b+hits"
+        }
+        
+        let prefs = NSUserDefaults.standardUserDefaults()
+        prefs.setValue(key, forKeyPath: "GENREKEY")
+        
+        self.performSegueWithIdentifier("searchSegue", sender: self)
+        
+    }
+    
     func logInViewController(logInController: PFLogInViewController, didFailToLogInWithError error: NSError?) {
         if error != nil {
-            print(error?.localizedDescription)
+            let alert = UIAlertController(title: "Oops", message: "Something went wrong please try again", preferredStyle: .Alert)
+            self.presentViewController(alert, animated: true, completion: nil)
         }
         else {
             self.dismissViewControllerAnimated(true, completion: nil)
@@ -141,6 +193,7 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
             gParseList?.removeAll(keepCapacity: true)
             
             loginVC.fields = [PFLogInFields.UsernameAndPassword,
+               
                 PFLogInFields.LogInButton,
                 PFLogInFields.SignUpButton,
                 PFLogInFields.PasswordForgotten,
@@ -149,14 +202,15 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
                 PFLogInFields.Twitter]
             
             //            loginVC.facebookPermissions = ["public_profile", "email"]
-            
-            let logoView = UIImageView(image: UIImage(named:"ocLogo50"))
+            loginVC.view.backgroundColor = UIColor.darkGrayColor()
+            let logoView = UIImageView(image: UIImage(named:"ic_launcher_192"))
             loginVC.logInView?.logo = logoView
             loginVC.delegate = self
             
             //signup controller
             
             loginVC.signUpController?.fields = ([PFSignUpFields.UsernameAndPassword, PFSignUpFields.Email])
+            loginVC.signUpController?.view.backgroundColor = UIColor.darkGrayColor()
             loginVC.signUpController?.signUpView?.logo = logoView
             loginVC.signUpController?.delegate = self
             
@@ -179,20 +233,52 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     }
     
     func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        var story:String!
+        
+        
         if index == 0 {
-           createNewList()
+           
+            PFUser.logOut()
+            curUser = nil
+            logInHelper()
+            
         }
+        else if index == 1 {
+            story = "searchVC"
+        }
+        else if index == 2 {
+            story = "listVC"
+        }
+        else {
+            createNewList()
+        }
+        
+        if story != nil {
+            let vc = storyBoard.instantiateViewControllerWithIdentifier(story)
+            self.presentViewController(vc, animated: true, completion: nil)
+        }
+        
         liquidFloatingActionButton.close()
     }
     
     func setupLiquidTouch () {
         
-        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 45 - 20, y: self.view.frame.height - 45 - 20, width: 45, height:45))
         
         liquidBtn.delegate = self
         liquidBtn.dataSource = self
-        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
         
+        // buttons for liquid menu in ord they appear
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        let toListsCell = LiquidFloatingCell(icon: UIImage(named: "btn_lists.png")!)
+        let toSearchCell = LiquidFloatingCell(icon: UIImage(named: "btn_search.png")!)
+        let logoutCell = LiquidFloatingCell(icon: UIImage(named: "btn_logout.png")!)
+        
+        self.cells.append(logoutCell)
+        self.cells.append(toSearchCell)
+        self.cells.append(toListsCell)
         self.cells.append(addNewListCell)
         
         self.view.addSubview(liquidBtn)

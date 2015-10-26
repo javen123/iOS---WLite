@@ -21,6 +21,8 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     
     var vidId:String?
     
+    var genreSearch:String?
+    
     //Liquid cells setup
     var cells:[LiquidFloatingCell] = []
     var floatingCell: LiquidFloatingActionButton!
@@ -34,6 +36,13 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //genre search 
+        
+        let prefs = NSUserDefaults.standardUserDefaults()
+        if prefs.objectForKey("GENREKEY") != nil {
+            self.genreSearch = prefs.objectForKey("GENREKEY") as? String
+        }
         
         // searchbar setup
         
@@ -63,7 +72,15 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         tableView.hidden = true
         self.activityIndicator.hidden = true
         self.activityIndicatorAction()
-        API.genericYtListPull("top+music")
+        if let genre = self.genreSearch{
+            API.genericYtListPull(genre)
+            let prefs = NSUserDefaults.standardUserDefaults()
+            prefs.setValue(nil, forKeyPath: "GENREKEY")
+        }
+        else {
+            API.genericYtListPull("top+music")
+        }
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "convertYtApiInfoToCell:", name: "ULFINISHED", object: nil)
     }
     
@@ -151,11 +168,9 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         }
     }
     
-    @IBAction func logOutBtnPressed(sender: AnyObject) {
+    @IBAction func btnBackPressed(sender: AnyObject) {
         
-        PFUser.logOut()
-        curUser = nil
-        self.tabBarController?.selectedIndex = 0
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     //MARK: HELPERS
@@ -175,7 +190,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
             let vidTitle = value["snippet"]["title"].stringValue
             let vidDes = value["snippet"]["description"].stringValue
             let url = value["snippet"]["thumbnails"]["default"]["url"].stringValue
-            var vidInfo = VideoItem(vidId: id, vidTitle: vidTitle, vidDesc: vidDes, vidPic: url)
+            let vidInfo = VideoItem(vidId: id, vidTitle: vidTitle, vidDesc: vidDes, vidPic: url)
             ytAPILists.append(vidInfo)
         }
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -320,20 +335,52 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     }
     
     func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        var story:String!
+        
+        
         if index == 0 {
+            
+            PFUser.logOut()
+            curUser = nil
+            self.dismissViewControllerAnimated(true, completion: nil)
+            story = "homeVC"
+        }
+        else if index == 1 {
+            story = "homeVC"
+        }
+        else if index == 2 {
+            story = "listVC"
+        }
+        else {
             createNewList()
         }
+        
+        if story != nil {
+            let vc = storyBoard.instantiateViewControllerWithIdentifier(story)
+            self.presentViewController(vc, animated: true, completion: nil)
+        }
+        
         liquidFloatingActionButton.close()
     }
     
     func setupLiquidTouch () {
         
-        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 45 - 20, y: self.view.frame.height - 45 - 20, width: 45, height:45))
         
         liquidBtn.delegate = self
         liquidBtn.dataSource = self
-        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
         
+        // buttons for liquid menu in ord they appear
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        let toListsCell = LiquidFloatingCell(icon: UIImage(named: "btn_lists.png")!)
+        let toHomeCell = LiquidFloatingCell(icon: UIImage(named: "btn_home.png")!)
+        let logoutCell = LiquidFloatingCell(icon: UIImage(named: "btn_logout.png")!)
+        
+        self.cells.append(logoutCell)
+        self.cells.append(toHomeCell)
+        self.cells.append(toListsCell)
         self.cells.append(addNewListCell)
         
         self.view.addSubview(liquidBtn)
@@ -365,5 +412,4 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         alert.addAction(saveAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
-
 }

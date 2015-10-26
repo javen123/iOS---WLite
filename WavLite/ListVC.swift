@@ -59,29 +59,9 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
         }
     }
     
-    @IBAction func btn_logout_pressed(sender: AnyObject) {
+    @IBAction func btnBackPressed(sender: AnyObject) {
         
-        PFUser.logOut()
-        curUser = nil
-        self.tabBarController?.selectedIndex = 0
-    }
-    
-    
-    //MARK: TableView data and delegate
-    
-    func isDataAvailable(){
-        
-        if gParseList == nil {
-            self.hasList = false
-            self.noListLabel.hidden = false
-            self.tableView.hidden = true
-        }
-        else {
-            self.hasList = true
-            self.noListLabel.hidden = true
-            self.tableView.hidden = false
-        }
-
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     //MARK: Tableview funcs
@@ -147,16 +127,44 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         if editingStyle == UITableViewCellEditingStyle.Delete {
-            let title = gParseList![indexPath.row].objectId
-            gParseList?.removeAtIndex(indexPath.row)
-            let api = APIRequests()
-            api.removeUserList(title!)
-            self.tableView.reloadData()
+            
+            let alert = UIAlertController(title: "Are you sure you want to delete?", message: "", preferredStyle: .Alert)
+            let deleteAction = UIAlertAction(title: "Delete", style: .Destructive, handler: { (UIAlertAction) -> Void in
+              
+                let title = gParseList![indexPath.row].objectId
+                gParseList?.removeAtIndex(indexPath.row)
+                let api = APIRequests()
+                api.removeUserList(title!)
+                self.tableView.reloadData()
+                
+            })
+            alert.addAction(deleteAction)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
+            alert.addAction(cancelAction)
+            self.addChildViewController(alert)
         }
         
         if editingStyle == UITableViewCellEditingStyle.Insert {
             
         }
+    }
+    
+    //MARK: TableView data and delegate
+    
+    func isDataAvailable(){
+        
+        if gParseList == nil {
+            self.hasList = false
+            self.noListLabel.hidden = false
+            self.tableView.hidden = true
+        }
+        else {
+            self.hasList = true
+            self.noListLabel.hidden = true
+            self.tableView.hidden = false
+        }
+        
     }
     
     //MARK: LiquidBtn funcs
@@ -169,20 +177,54 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
     }
     
     func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        var story:String!
+        
+        
         if index == 0 {
+            
+            PFUser.logOut()
+            curUser = nil
+            
+            self.dismissViewControllerAnimated(true, completion: nil)
+            story = "homeVC"
+            
+        }
+        else if index == 1 {
+            story = "searchVC"
+        }
+        else if index == 2 {
+            story = "homeVC"
+        }
+        else {
             createNewList()
         }
+        
+        if story != nil {
+            let vc = storyBoard.instantiateViewControllerWithIdentifier(story)
+            self.presentViewController(vc, animated: true, completion: nil)
+        }
+        
         liquidFloatingActionButton.close()
     }
     
     func setupLiquidTouch () {
         
-        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 45 - 20, y: self.view.frame.height - 45 - 20, width: 45, height:45))
         
         liquidBtn.delegate = self
         liquidBtn.dataSource = self
-        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
         
+        // buttons for liquid menu in ord they appear
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        let toHomeCell = LiquidFloatingCell(icon: UIImage(named: "btn_home.png")!)
+        let toSearchCell = LiquidFloatingCell(icon: UIImage(named: "btn_search.png")!)
+        let logoutCell = LiquidFloatingCell(icon: UIImage(named: "btn_logout.png")!)
+        
+        self.cells.append(logoutCell)
+        self.cells.append(toSearchCell)
+        self.cells.append(toHomeCell)
         self.cells.append(addNewListCell)
         
         self.view.addSubview(liquidBtn)
@@ -214,6 +256,4 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
         alert.addAction(saveAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
-    
-
 }

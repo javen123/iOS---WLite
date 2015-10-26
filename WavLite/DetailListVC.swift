@@ -265,6 +265,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         
         let deleteAction = UIAlertAction(title: "Delete", style: .Destructive) { (UIAlertAction) -> Void in
             
+            self.confirmDeleteOfVideo(index)
             
         }
         
@@ -290,7 +291,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             
             
         }
-        let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
         self.presentViewController(alert, animated: true, completion: nil)
@@ -397,8 +398,6 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         return alertSheet
     }
 
-    
-    
     //MARK: LiquidBtn funcs
     
     func numberOfCells(liquidFloatingActionButton: LiquidFloatingActionButton) -> Int {
@@ -409,20 +408,54 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     }
     
     func liquidFloatingActionButton(liquidFloatingActionButton: LiquidFloatingActionButton, didSelectItemAtIndex index: Int) {
+        
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        var story:String!
+        
+        
         if index == 0 {
+            
+            PFUser.logOut()
+            curUser = nil
+            
+            self.dismissViewControllerAnimated(true, completion: nil)
+            story = "homeVC"
+            
+        }
+        else if index == 1 {
+            story = "searchVC"
+        }
+        else if index == 2 {
+            story = "homeVC"
+        }
+        else {
             createNewList()
         }
+        
+        if story != nil {
+            let vc = storyBoard.instantiateViewControllerWithIdentifier(story)
+            self.presentViewController(vc, animated: true, completion: nil)
+        }
+        
         liquidFloatingActionButton.close()
     }
     
     func setupLiquidTouch () {
         
-        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 56 - 26, y: self.view.frame.height / 2, width: 56, height:56))
+        let liquidBtn = LiquidFloatingActionButton(frame: CGRect(x: self.view.frame.width - 45 - 20, y: self.view.frame.height - 45 - 20, width: 45, height:45))
         
         liquidBtn.delegate = self
         liquidBtn.dataSource = self
-        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
         
+        // buttons for liquid menu in ord they appear
+        let addNewListCell = LiquidFloatingCell(icon: UIImage(named: "btn_add.png")!)
+        let toHomeCell = LiquidFloatingCell(icon: UIImage(named: "btn_home.png")!)
+        let toSearchCell = LiquidFloatingCell(icon: UIImage(named: "btn_search.png")!)
+        let logoutCell = LiquidFloatingCell(icon: UIImage(named: "btn_logout.png")!)
+        
+        self.cells.append(logoutCell)
+        self.cells.append(toSearchCell)
+        self.cells.append(toHomeCell)
         self.cells.append(addNewListCell)
         
         self.view.addSubview(liquidBtn)
@@ -443,18 +476,18 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         alert.addAction(cancelAction)
         
         let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
+            let API = APIRequests()
             
             if let inputTitle = aTextField?.text {
                 
-                self.API.createListTitle(inputTitle, vidId: nil)
+                API.createListTitle(inputTitle, vidId: nil)
             }
         }
         
         alert.addAction(saveAction)
         self.presentViewController(alert, animated: true, completion: nil)
     }
-    
-    
+
     func activityIndicatorAction(){
         
         if self.activityIndicator.hidden == false {
