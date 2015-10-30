@@ -10,11 +10,8 @@ import Foundation
 import Parse
 import SwiftyJSON
 
-//Globals
 
-var gJson:JSON?
-var gParseList:[PFObject]?
-var curUser:PFUser?
+
 
 class APIRequests {
     
@@ -79,15 +76,16 @@ class APIRequests {
         })
     }
 
-    func grabListsFromParse(){
+    func grabListsFromParse(completed:UpdateComplete){
         
         if curUser != nil {
             
+            userLists.removeAll()
             gParseList = nil
             
             let query = PFQuery(className: "Lists")
             query.whereKey("createdBy", equalTo: curUser!)
-            query.orderByAscending("myLists")
+            query.orderByAscending("listTitle")
             query.findObjectsInBackgroundWithBlock({
                 
                 objects, error in
@@ -97,7 +95,25 @@ class APIRequests {
                 }
                 else {
                     gParseList = objects! as [PFObject]
-                    print("Parse info: \(gParseList)")
+                   
+                    for x in objects! {
+                        
+                        if let title = x["listTitle"] {
+                            let tmpTitle = title as! String
+                            
+                            var tmp = [String]()
+                            if let lists = x["myLists"] as? [String] {
+                                for y in lists {
+                                    tmp.append(y)
+                                }
+                            }
+                            
+                            let list = MyLists(title: tmpTitle, lists: tmp)
+                            userLists.append(list)
+                            
+                        }
+                    }
+                    completed()
                 }
             })
         }
@@ -108,7 +124,7 @@ class APIRequests {
     }
 
     
-    func addUpdateItemToUserList(listId:String, newList:[String]) {
+    func addUpdateItemToUserList(listId:String, newList:[String], completed:UpdateComplete) {
         
         let query = PFQuery(className: "Lists")
         query.getObjectInBackgroundWithId(listId, block: {
@@ -130,44 +146,46 @@ class APIRequests {
                             print(error!.localizedDescription)
                         }
                         else {
-                            self.grabListsFromParse()
+                            
+                            self.grabListsFromParse({ () -> () in
+                                return
+                            })
+                            completed()
                         }
                     })
                 }
             }
             else {
+                
+                
                 print("Object is nil")
                 
             }
         })
     }
     
-    func removeUserList(listId:String) {
+    func removeUserList(name:[String]) {
         
-        let query = PFQuery(className: "Lists")
-        query.getObjectInBackgroundWithId(listId, block: {
-        object, error in
+        var pfList:[PFObject]!
         
-            if error != nil {
-                //do some alert here
-            }
+        for x in name {
+            let tmp = gParseList!.filter({$0["listTitle"] as! String == x})
+            pfList = tmp
+        }
+        
+        PFObject.deleteAllInBackground(pfList) {
             
-            else if let x = object{
-                
-                x.deleteInBackgroundWithBlock(){
-                    success, error in
-                    if error != nil {
-                        //alert box here
-                    }
-                    else if success {
-                        self.grabListsFromParse()
-                    }
-                }
+            success, err in
+            
+            if err != nil {
+                print(err?.localizedDescription)
+            } else {
+                print("Success")
             }
-        })
+        }
     }
     
-    func createListTitle(listTitle:String, vidId:[String]?) {
+    func createListTitle(listTitle:String, vidId:[String]?, completed:UpdateComplete) {
         
         //create list object
         
@@ -182,7 +200,7 @@ class APIRequests {
         let relation = newList.relationForKey("createdBy")
         relation.addObject(curUser!)
         
-        newList.saveEventually {
+        newList.saveInBackgroundWithBlock {
             
             success, error in
             if error != nil {
@@ -194,10 +212,53 @@ class APIRequests {
                 
             }
             else {
-                self.grabListsFromParse()
+                self.grabListsFromParse({ () -> () in
+                    completed()
+                })
                 
             }
         }
     }
     
+    func updateUserListsToParse(mylists:[PFObject]){
+        
+    }
+    
+    func convertUserListsToParseObjectsAndSaveToParse() {
+        
+        var parseObjects = [PFObject]()
+        
+        if userLists.count > 0 && gParseList != nil{
+            
+            for x in userLists {
+                
+                let tmp = gParseList!.filter({$0["listTitle"] as! String == x.title})
+                let id = tmp[0].valueForKey("objectId") as? String
+                print(tmp)
+                let object = PFObject(withoutDataWithClassName: "Lists", objectId: id)
+                object.setObject(x.title, forKey: "listTitle")
+                object.setObject(x.lists, forKey: "myLists")
+                parseObjects.append(object)
+            }
+            
+            
+            PFObject.saveAllInBackground(parseObjects, block: {
+                success, err in
+                
+                if err != nil {
+                    print(err?.debugDescription)
+                } else if success == true {
+                    print("PARSE SUCCESS")
+                    self.grabListsFromParse({ () -> () in
+                        return
+                    })
+                } else {
+                    print("SHIT..PARSE!!!")
+                }
+            })
+            changesMade = false
+        }
+        
+    }
+
 }

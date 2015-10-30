@@ -21,11 +21,6 @@ class ProfileVCViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func logoutBtnPressed(sender: AnyObject) {
-        
-        self.tabBarController?.selectedIndex = 0
-        
-    }
-
+   
     
 }

@@ -14,14 +14,14 @@
 		8F4394021BA86D7600218B64 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4394011BA86D7600218B64 /* SearchCell.swift */; };
 		8F688AC31B7277D400690575 /* DetailListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F688AC21B7277D400690575 /* DetailListVC.swift */; };
 		8F688AC51B7277EE00690575 /* DetailListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F688AC41B7277EE00690575 /* DetailListCell.swift */; };
-		8F6963281BC6C19D003B9E72 /* ArrayEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963201BC6C19D003B9E72 /* ArrayEx.swift */; settings = {ASSET_TAGS = (); }; };
-		8F6963291BC6C19D003B9E72 /* CGPointEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963211BC6C19D003B9E72 /* CGPointEx.swift */; settings = {ASSET_TAGS = (); }; };
-		8F69632A1BC6C19D003B9E72 /* CGRectEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963221BC6C19D003B9E72 /* CGRectEx.swift */; settings = {ASSET_TAGS = (); }; };
-		8F69632B1BC6C19D003B9E72 /* LiquidFloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963231BC6C19D003B9E72 /* LiquidFloatingActionButton.swift */; settings = {ASSET_TAGS = (); }; };
-		8F69632C1BC6C19D003B9E72 /* LiquidUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963241BC6C19D003B9E72 /* LiquidUtil.swift */; settings = {ASSET_TAGS = (); }; };
-		8F69632D1BC6C19D003B9E72 /* LiquittableCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963251BC6C19D003B9E72 /* LiquittableCircle.swift */; settings = {ASSET_TAGS = (); }; };
-		8F69632E1BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963261BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift */; settings = {ASSET_TAGS = (); }; };
-		8F69632F1BC6C19D003B9E72 /* UIColorEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963271BC6C19D003B9E72 /* UIColorEx.swift */; settings = {ASSET_TAGS = (); }; };
+		8F6963281BC6C19D003B9E72 /* ArrayEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963201BC6C19D003B9E72 /* ArrayEx.swift */; };
+		8F6963291BC6C19D003B9E72 /* CGPointEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963211BC6C19D003B9E72 /* CGPointEx.swift */; };
+		8F69632A1BC6C19D003B9E72 /* CGRectEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963221BC6C19D003B9E72 /* CGRectEx.swift */; };
+		8F69632B1BC6C19D003B9E72 /* LiquidFloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963231BC6C19D003B9E72 /* LiquidFloatingActionButton.swift */; };
+		8F69632C1BC6C19D003B9E72 /* LiquidUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963241BC6C19D003B9E72 /* LiquidUtil.swift */; };
+		8F69632D1BC6C19D003B9E72 /* LiquittableCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963251BC6C19D003B9E72 /* LiquittableCircle.swift */; };
+		8F69632E1BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963261BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift */; };
+		8F69632F1BC6C19D003B9E72 /* UIColorEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6963271BC6C19D003B9E72 /* UIColorEx.swift */; };
 		8F7ED0971B7020F9004A4663 /* VideoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7ED0961B7020F9004A4663 /* VideoItem.swift */; };
 		8FA98D861BA0999800B428C7 /* ProfileVCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA98D851BA0999800B428C7 /* ProfileVCViewController.swift */; };
 		8FB7EA4B1B6833660088B6BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA4A1B6833660088B6BC /* AppDelegate.swift */; };
@@ -33,6 +33,8 @@
 		8FB7EA701B68339A0088B6BC /* ListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA6F1B68339A0088B6BC /* ListVC.swift */; };
 		8FB7EA741B6833CA0088B6BC /* ListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7EA731B6833CA0088B6BC /* ListCell.swift */; };
 		8FDEDEE31B695A2900397A5D /* APIRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDEDEE21B695A2900397A5D /* APIRequests.swift */; };
+		8FE7532C1BE27E1600C2A074 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE7532B1BE27E1600C2A074 /* Globals.swift */; };
+		8FE753301BE2881900C2A074 /* MyLists.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE7532F1BE2881900C2A074 /* MyLists.swift */; };
 		B6F7164550D33334F333313B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB5B195EDF0CC32752FECEB /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -80,6 +82,8 @@
 		8FB7EA731B6833CA0088B6BC /* ListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCell.swift; sourceTree = "<group>"; };
 		8FB7EA791B6922710088B6BC /* Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Header.h; sourceTree = "<group>"; };
 		8FDEDEE21B695A2900397A5D /* APIRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIRequests.swift; sourceTree = "<group>"; };
+		8FE7532B1BE27E1600C2A074 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		8FE7532F1BE2881900C2A074 /* MyLists.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyLists.swift; sourceTree = "<group>"; };
 		9CB5B195EDF0CC32752FECEB /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA8D28EADBDEADC46A01D75C /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -131,14 +135,13 @@
 			name = LiquidFloatingActionButton;
 			sourceTree = "<group>";
 		};
-		8F7ED0951B7020DE004A4663 /* Data */ = {
+		8F7ED0951B7020DE004A4663 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8FDEDEE21B695A2900397A5D /* APIRequests.swift */,
 				8F7ED0961B7020F9004A4663 /* VideoItem.swift */,
-				8F1369FB1BAB4FDE00C0F8FF /* Reachability.swift */,
+				8FE7532F1BE2881900C2A074 /* MyLists.swift */,
 			);
-			name = Data;
+			name = Model;
 			sourceTree = "<group>";
 		};
 		8FB7EA3C1B6833660088B6BC = {
@@ -164,8 +167,9 @@
 		8FB7EA471B6833660088B6BC /* WavLite */ = {
 			isa = PBXGroup;
 			children = (
+				8FE7532A1BE27DFE00C2A074 /* Util */,
 				8F69631F1BC6C132003B9E72 /* LiquidFloatingActionButton */,
-				8F7ED0951B7020DE004A4663 /* Data */,
+				8F7ED0951B7020DE004A4663 /* Model */,
 				8FB7EA6C1B68337A0088B6BC /* VCs */,
 				8FB7EA501B6833660088B6BC /* Main.storyboard */,
 				8FB7EA531B6833660088B6BC /* Images.xcassets */,
@@ -215,6 +219,16 @@
 				8F4394011BA86D7600218B64 /* SearchCell.swift */,
 			);
 			name = VCs;
+			sourceTree = "<group>";
+		};
+		8FE7532A1BE27DFE00C2A074 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				8FE7532B1BE27E1600C2A074 /* Globals.swift */,
+				8FDEDEE21B695A2900397A5D /* APIRequests.swift */,
+				8F1369FB1BAB4FDE00C0F8FF /* Reachability.swift */,
+			);
+			name = Util;
 			sourceTree = "<group>";
 		};
 		9010C940A9DD779A6E4E13E4 /* Pods */ = {
@@ -385,9 +399,11 @@
 				8F69632B1BC6C19D003B9E72 /* LiquidFloatingActionButton.swift in Sources */,
 				8F4394021BA86D7600218B64 /* SearchCell.swift in Sources */,
 				8F69632E1BC6C19D003B9E72 /* SimpleCircleLiquidEngine.swift in Sources */,
+				8FE7532C1BE27E1600C2A074 /* Globals.swift in Sources */,
 				8F7ED0971B7020F9004A4663 /* VideoItem.swift in Sources */,
 				8F6963291BC6C19D003B9E72 /* CGPointEx.swift in Sources */,
 				8F688AC51B7277EE00690575 /* DetailListCell.swift in Sources */,
+				8FE753301BE2881900C2A074 /* MyLists.swift in Sources */,
 				8F69632F1BC6C19D003B9E72 /* UIColorEx.swift in Sources */,
 				8F4394001BA8677000218B64 /* SearchViewVC.swift in Sources */,
 				8FDEDEE31B695A2900397A5D /* APIRequests.swift in Sources */,

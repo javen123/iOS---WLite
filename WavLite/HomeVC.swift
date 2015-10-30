@@ -15,11 +15,12 @@ import WebKit
 class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, LiquidFloatingActionButtonDataSource, LiquidFloatingActionButtonDelegate {
     
    
-    @IBOutlet var webView:UIWebView!
-    @IBOutlet weak var container: UIView!
+   
+    @IBOutlet weak var webView: UIWebView!
+   
     
-    var aWebView:WKWebView!
     //Liquid cells setup
+    
     var cells:[LiquidFloatingCell] = []
     var floatingCell: LiquidFloatingActionButton!
     var floatingBtnImg:UIImage!
@@ -33,25 +34,17 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "noConnection:", name: ReachabilityChangedNotification, object: reachability)
         
-        
         // Load webview
         
-        self.aWebView = WKWebView()
-        container.addSubview(self.aWebView)
-        let frame = CGRectMake(0, 0, container.bounds.width, container.bounds.height)
-        self.aWebView.frame = frame
+        webView.sizeToFit()
+        webView.frame.insetInPlace(dx: 8, dy: 8)
         
         let url = NSURL(string: "http://www.wavlite.com/api/videoPlayer.html")
         let request = NSURLRequest(URL: url!)
-        
-          
-        webView.sizeToFit()
-        webView.frame.insetInPlace(dx: 8, dy: 8)
-        webView.loadRequest(request)
-        
-        //TODO: Add logout notification
+        self.webView.loadRequest(request)
         
         // Liquid floating button add
+        
         setupLiquidTouch()
     }
     
@@ -90,10 +83,11 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         
         curUser = user
         let API = APIRequests()
-        API.grabListsFromParse()
-       
+        API.grabListsFromParse { () -> () in
+            return
+        }
         
-         //        let graphRequest:FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "/me?fields=picture,first_name,last_name,email", parameters: nil)
+       //        let graphRequest:FBSDKGraphRequest = FBSDKGraphRequest(graphPath: "/me?fields=picture,first_name,last_name,email", parameters: nil)
         //        graphRequest.startWithCompletionHandler({
         //            connection, result, error in
         //
@@ -181,8 +175,6 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     
         
     func logInHelper(){
-        
-        print("CurUser is: \(curUser)")
         
         if curUser == nil {
             
@@ -303,7 +295,9 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
             
             if let inputTitle = aTextField?.text {
                 
-                API.createListTitle(inputTitle, vidId: nil)
+                API.createListTitle(inputTitle, vidId: nil, completed: { () -> () in
+                    return
+                })
             }
         }
         

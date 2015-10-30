@@ -10,4 +10,6 @@
 #import <ParseUI/ParseUI.h>
 #import <ParseTwitterUtils/PFTwitterUtils.h>
 #import <ParseFacebookUtilsV4/PFFacebookUtils.h>
+#import <Bolts/Bolts.h>
+#import <Parse/PFObject+Subclass.h>
 

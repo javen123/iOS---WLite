@@ -13,35 +13,44 @@ import Parse
 class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, LiquidFloatingActionButtonDataSource, LiquidFloatingActionButtonDelegate {
     
     @IBOutlet weak var noListLabel: UILabel!
-    var tableList = [String]()
-    
     @IBOutlet weak var tableView: UITableView!
-    
-    var hasList = false
     
     //Liquid cells setup
     var cells:[LiquidFloatingCell] = []
     var floatingCell: LiquidFloatingActionButton!
     var floatingBtnImg:UIImage!
-
+    var deletedListName:[String]!
+    
+    let API = APIRequests()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        isDataAvailable()
-        self.tableView.reloadData()
         
+        self.tableView.reloadData()
+        isDataAvailable()
         // Liquid floating button add
         setupLiquidTouch()
         
         
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewDidDisappear(animated: Bool) {
         
-        self.tableView.reloadData()
-        if curUser == nil {
-            self.tabBarController?.selectedIndex = 0
+        if changesMade == true {
+            API.convertUserListsToParseObjectsAndSaveToParse()
         }
+        
+        if self.deletedListName != nil {
+            API.removeUserList(self.deletedListName)
+           
+            
+            self.deletedListName.removeAll()
+        }
+    }
+    override func viewDidAppear(animated: Bool) {
+        tableView.reloadData()
+        isDataAvailable()
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,70 +62,56 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
         
         if segue.identifier == "toDetailSegue"{
             let vc:DetailListVC = segue.destinationViewController as! DetailListVC
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let videoList:PFObject = gParseList![indexPath!.row]
-            vc.videos = videoList
+            let indexPath = self.tableView.indexPathForSelectedRow?.row
+            vc.listIndex = indexPath
         }
     }
     
-    @IBAction func btnBackPressed(sender: AnyObject) {
-        
+    @IBAction func btnBackPressed(sender: AnyObject){
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
     
     //MARK: Tableview funcs
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         
-        if self.hasList {
-            
-        }
         var x:CGFloat!
-        if self.tableList.count >= 10 {
-            x = 30
+        if userLists.count >= 10 {
+            x = 60
         }
         else {
-            x = 60
+            x = 80
         }
         return x
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if self.hasList {
-            return gParseList!.count
-        }
-        else {
-            return 0
-        }
+            return userLists.count
+    
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        if self.hasList {
-            
-            let cell:ListCell = tableView.dequeueReusableCellWithIdentifier("listCell") as! ListCell
         
-            let path:PFObject = gParseList![indexPath.row]
-            
-            let titleText:String = path["listTitle"] as! String
-
-             cell.titleLabel.text = titleText
-            
+        let cell:ListCell = tableView.dequeueReusableCellWithIdentifier("listCell") as! ListCell
+        
+        let title = userLists[indexPath.row].title
+            cell.titleLabel.text = title
             return cell
-        }
-        else {
-            return UITableViewCell()
-        }
     }
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let curList:PFObject = gParseList![indexPath.row]
-        let list:AnyObject? = curList["myLists"]
-        if list == nil {
-            let alert:UIAlertView = UIAlertView(title: "Oops", message: "You have no videos in this list", delegate: self, cancelButtonTitle: "Ok")
-            alert.show()
+        let curList = userLists[indexPath.row].lists
+        
+        if curList.count == 0 {
+            
+            let alert = UIAlertController(title: "Oops", message: "You have no videos in this list", preferredStyle: UIAlertControllerStyle.Alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            alert.addAction(cancelAction)
+            self.presentViewController(alert, animated: true, completion: nil)
         }
         else {
             
@@ -131,36 +126,32 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
             let alert = UIAlertController(title: "Are you sure you want to delete?", message: "", preferredStyle: .Alert)
             let deleteAction = UIAlertAction(title: "Delete", style: .Destructive, handler: { (UIAlertAction) -> Void in
               
-                let title = gParseList![indexPath.row].objectId
-                gParseList?.removeAtIndex(indexPath.row)
-                let api = APIRequests()
-                api.removeUserList(title!)
+                self.deletedListName = [String]()
+                self.deletedListName.append(userLists[indexPath.row].title)
+                userLists.removeAtIndex(indexPath.row)
                 self.tableView.reloadData()
-                
+                self.isDataAvailable()
             })
             alert.addAction(deleteAction)
             
             let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
             alert.addAction(cancelAction)
-            self.addChildViewController(alert)
+            self.presentViewController(alert, animated: true, completion: nil)
         }
         
-        if editingStyle == UITableViewCellEditingStyle.Insert {
-            
-        }
     }
     
     //MARK: TableView data and delegate
     
     func isDataAvailable(){
         
-        if gParseList == nil {
-            self.hasList = false
+        if userLists.count == 0 {
+           
             self.noListLabel.hidden = false
             self.tableView.hidden = true
         }
         else {
-            self.hasList = true
+            
             self.noListLabel.hidden = true
             self.tableView.hidden = false
         }
@@ -186,8 +177,6 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
             
             PFUser.logOut()
             curUser = nil
-            
-            self.dismissViewControllerAnimated(true, completion: nil)
             story = "homeVC"
             
         }
@@ -249,7 +238,10 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
             
             if let inputTitle = aTextField?.text {
                 
-                API.createListTitle(inputTitle, vidId: nil)
+                API.createListTitle(inputTitle, vidId: nil, completed: { () -> () in
+                    
+                    self.tableView.reloadData()
+                })
             }
         }
         

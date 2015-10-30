@@ -67,6 +67,12 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
 
     }
     
+    override func viewDidDisappear(animated: Bool) {
+        if changesMade == true {
+            self.API.convertUserListsToParseObjectsAndSaveToParse()
+        }
+    }
+    
     override func viewWillAppear(animated: Bool) {
         
         tableView.hidden = true
@@ -177,7 +183,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     
     func convertYtApiInfoToCell(notification:NSNotification){
         
-        for (key, value): (String, JSON) in gJson!["items"] {
+        for (_, value): (String, JSON) in gJson!["items"] {
            
             var id:String
             if value["id"]["playlistId"] != nil{
@@ -219,99 +225,56 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
     func addTitleToListSheet(vidId:String, vidTitle: String) {
         
         var alertSheet:UIAlertController?
-        var id:String!
         
-        if let objects = gParseList {
+        if userLists.count > 0 {
             
             alertSheet = UIAlertController(title: vidTitle, message: "Choose list", preferredStyle: UIAlertControllerStyle.ActionSheet)
-            
-            
-            
-            for x in objects{
-                id = x.objectId
-                var myLists:[String] = x["myLists"] as! [String]
-                let title:String = x.valueForKey("listTitle") as! String
-                let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
-                    
-                    myLists.append(vidId)
-                    
-                    self.API.addUpdateItemToUserList(id!, newList: myLists)
-                    
-                    //TODO:Figue out synchronous call before showing alert
-                    
-                    self.addSingleTitleAlertHelper(true)
-                })
                 
-                alertSheet?.addAction(action)
+                for x in userLists{
+                    
+                    let title = x.title
+                    let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
+                        
+                        x.addNewTitle(vidId)
+                        changesMade = true
+                        self.addSingleTitleAlertHelper()
+                    })
+                    
+                    
+                    alertSheet?.addAction(action)
+                }
+                let createAction = UIAlertAction(title: "Create New List", style: UIAlertActionStyle.Destructive, handler: { (UIAlertAction) -> Void in
+                    
+                    self.createNewList()
+                    
+                })
+                alertSheet?.addAction(createAction)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+            alertSheet?.addAction(cancelAction)
+            self.presentViewController(alertSheet!, animated: true, completion: nil)
+
+            
+            } else {
+                
+                self.createNewList()
             }
-        }
-        else {
-            
-            self.createList([self.vidId!])
-            
-        }
-        
-        let createAction = UIAlertAction(title: "Create New List", style: UIAlertActionStyle.Destructive, handler: { (UIAlertAction) -> Void in
-            
-            self.createList([self.vidId!])
-            
-        })
-        alertSheet?.addAction(createAction)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-        alertSheet?.addAction(cancelAction)
-        self.presentViewController(alertSheet!, animated: true, completion: nil)
     }
 
-    func addSingleTitleAlertHelper(success:Bool){
+    func addSingleTitleAlertHelper(){
         
-        if success {
-            
+        
             let alert = UIAlertController(title: "Success", message: "Your video has been added", preferredStyle: UIAlertControllerStyle.Alert)
             let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
             alert.addAction(cancelAction)
             self.presentViewController(alert, animated: true, completion: nil)
-        }
-        else {
+      
             
-            let alert = UIAlertController(title: "Oops", message: "You may have to try that again", preferredStyle: UIAlertControllerStyle.Alert)
-            let cancelAction = UIAlertAction(title: "Ok", style: .Default, handler: nil)
-            alert.addAction(cancelAction)
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
+        
+       
     }
     
-    func createList (newId:[String]) {
-        
-        var aTextField:UITextField?
-        
-        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
-            
-            aTextField = text
-            
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-        alert.addAction(cancelAction)
-        
-        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
-            
-            var success:Bool!
-            if let inputTitle = aTextField?.text {
-                success = true
-                self.API.createListTitle(inputTitle, vidId: newId)
-            }
-            else {
-                success = false
-            }
-            self.addSingleTitleAlertHelper(success)
-        }
-        
-        alert.addAction(saveAction)
-        self.presentViewController(alert, animated: true, completion: nil)
-    }
-    
-    func activityIndicatorAction(){
+        func activityIndicatorAction(){
         
         if self.activityIndicator.hidden == false {
             self.activityIndicator.stopAnimating()
@@ -344,7 +307,6 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
             
             PFUser.logOut()
             curUser = nil
-            self.dismissViewControllerAnimated(true, completion: nil)
             story = "homeVC"
         }
         else if index == 1 {
@@ -390,7 +352,20 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         
         var aTextField:UITextField?
         
-        let alert = UIAlertController(title: "Create List", message: "Type your list title", preferredStyle: UIAlertControllerStyle.Alert)
+        var title:String!
+        var message:String!
+        
+        if userLists.count > 0 {
+            title = "Create New List"
+            message = ""
+            
+        } else {
+            title = "Create your first list"
+            message = "Once created you can add this video to the list"
+        }
+        
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addTextFieldWithConfigurationHandler { (text:UITextField) -> Void in
             
             aTextField = text
@@ -401,11 +376,13 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         alert.addAction(cancelAction)
         
         let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) -> Void in
-            let API = APIRequests()
+            
             
             if let inputTitle = aTextField?.text {
                 
-                API.createListTitle(inputTitle, vidId: nil)
+                self.API.createListTitle(inputTitle, vidId: nil, completed: { () -> () in
+                    return
+                })
             }
         }
         
