@@ -13,9 +13,11 @@ import SwiftyJSON
 
 var gJson:JSON?
 var gParseList:[PFObject]?
-var curUser:PFUser?
 var userLists = [MyLists]()
 var changesMade = false
+
+let BACKGROUND_COLOR = UIColor(red: 18 / 225.0, green: 32 / 225.0, blue: 64 / 225.0, alpha: 1.0)
+
 
 public typealias UpdateComplete = () -> ()
 public typealias AlertOrder = () -> ()

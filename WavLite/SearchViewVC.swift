@@ -67,12 +67,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
 
     }
     
-    override func viewDidDisappear(animated: Bool) {
-        if changesMade == true {
-            self.API.convertUserListsToParseObjectsAndSaveToParse()
-        }
-    }
-    
+        
     override func viewWillAppear(animated: Bool) {
         
         tableView.hidden = true
@@ -236,8 +231,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
                     let action = UIAlertAction(title: title, style: .Default, handler: { (UIAlertAction) -> Void in
                         
                         x.addNewTitle(vidId)
-                        changesMade = true
-                        self.addSingleTitleAlertHelper()
+                        self.API.convertUserListsToParseObjectsAndSaveToParse()
                     })
                     
                     
@@ -306,7 +300,7 @@ class SearchViewVC: UIViewController,UITableViewDataSource, UITableViewDelegate,
         if index == 0 {
             
             PFUser.logOut()
-            curUser = nil
+            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "SIGNEDIN")
             story = "homeVC"
         }
         else if index == 1 {

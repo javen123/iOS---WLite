@@ -260,7 +260,11 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         let alert = UIAlertController(title: "Are you Sure?", message: "Your video will be deleted", preferredStyle: UIAlertControllerStyle.Alert)
         let deleteAction = UIAlertAction(title: "Delete", style: .Destructive) { (UIAlertAction) -> Void in
             
+            userLists[self.listIndex].removeVideoAtIndex(index)
             self.vidInfo.removeAtIndex(index)
+            changesMade = true
+            self.tableView.reloadData()
+            
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
@@ -347,7 +351,7 @@ class DetailListVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         if index == 0 {
             
             PFUser.logOut()
-            curUser = nil
+            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "SIGNEDIN")
             story = "homeVC"
             
         }

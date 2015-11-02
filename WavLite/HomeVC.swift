@@ -25,6 +25,11 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     var floatingCell: LiquidFloatingActionButton!
     var floatingBtnImg:UIImage!
     
+    var signedIn:Bool {
+        let defs = NSUserDefaults.standardUserDefaults().boolForKey("SIGNEDIN")
+        return defs
+    }
+    
     let reachability = Reachability.reachabilityForInternetConnection()
     
     override func viewDidLoad() {
@@ -68,11 +73,7 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     }
     
     
-    @IBAction func logoutBtnPressed(sender: AnyObject) {
-        PFUser.logOut()
-        logInHelper()
-    }
-
+   
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -81,7 +82,8 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
     //MARK: Login funcs
     func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
         
-        curUser = user
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: "SIGNEDIN")
+        
         let API = APIRequests()
         API.grabListsFromParse { () -> () in
             return
@@ -176,7 +178,8 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         
     func logInHelper(){
         
-        if curUser == nil {
+        
+        if !self.signedIn {
             
             let loginVC = PFLogInViewController()
             
@@ -194,15 +197,16 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
                 PFLogInFields.Twitter]
             
             //            loginVC.facebookPermissions = ["public_profile", "email"]
-            loginVC.view.backgroundColor = UIColor.darkGrayColor()
+            loginVC.view.backgroundColor = BACKGROUND_COLOR
             let logoView = UIImageView(image: UIImage(named:"ic_launcher_192"))
+            logoView.contentMode = UIViewContentMode.ScaleAspectFit
             loginVC.logInView?.logo = logoView
             loginVC.delegate = self
             
             //signup controller
             
+            loginVC.signUpController?.view.backgroundColor = BACKGROUND_COLOR
             loginVC.signUpController?.fields = ([PFSignUpFields.UsernameAndPassword, PFSignUpFields.Email])
-            loginVC.signUpController?.view.backgroundColor = UIColor.darkGrayColor()
             loginVC.signUpController?.signUpView?.logo = logoView
             loginVC.signUpController?.delegate = self
             
@@ -233,7 +237,7 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
         if index == 0 {
            
             PFUser.logOut()
-            curUser = nil
+            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "SIGNEDIN")
             logInHelper()
             
         }

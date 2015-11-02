@@ -78,7 +78,11 @@ class APIRequests {
 
     func grabListsFromParse(completed:UpdateComplete){
         
-        if curUser != nil {
+        let defs = NSUserDefaults.standardUserDefaults().boolForKey("SIGNEDIN")
+        
+        if defs {
+            
+            let curUser = PFUser.currentUser()
             
             userLists.removeAll()
             gParseList = nil
@@ -114,6 +118,7 @@ class APIRequests {
                         }
                     }
                     completed()
+                    print(userLists.first?.lists)
                 }
             })
         }
@@ -186,6 +191,8 @@ class APIRequests {
     }
     
     func createListTitle(listTitle:String, vidId:[String]?, completed:UpdateComplete) {
+        
+        let curUser = PFUser.currentUser()
         
         //create list object
         

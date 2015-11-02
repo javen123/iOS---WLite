@@ -176,7 +176,7 @@ class ListVC: UIViewController, UITableViewDataSource, UITableViewDelegate, Liqu
         if index == 0 {
             
             PFUser.logOut()
-            curUser = nil
+            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "SIGNEDIN")
             story = "homeVC"
             
         }
