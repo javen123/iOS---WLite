@@ -10,6 +10,8 @@ import UIKit
 import ParseTwitterUtils
 import ParseFacebookUtilsV4
 import Parse
+import FBSDKCoreKit
+import FBSDKLoginKit
 
 
 @UIApplicationMain
@@ -29,13 +31,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print("Parse analytics error \(error?.localizedDescription)")
             }
         }
+        PFFacebookUtils.initializeFacebookWithApplicationLaunchOptions(launchOptions)
+        
         PFTwitterUtils.initializeWithConsumerKey("r7cJ69aO0Y7LaZuR6g8DmzBpJ", consumerSecret: "AvCnihJJ0PjbvcjAM8hCjG9xxZjhcrSypJyP7bUSprInQyle3Y")
         
         let reachability = Reachability.reachabilityForInternetConnection()
         reachability?.startNotifier()
         
         
-        return true
+        return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -60,14 +64,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return
             })
         }
-    
+        FBSDKAppEvents.activateApp()
     
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
+    
+    func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {
+        return FBSDKApplicationDelegate.sharedInstance().application(application, openURL: url, sourceApplication: sourceApplication, annotation: annotation)
+    }
 
 }
 

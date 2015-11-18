@@ -12,4 +12,6 @@
 #import <ParseFacebookUtilsV4/PFFacebookUtils.h>
 #import <Bolts/Bolts.h>
 #import <Parse/PFObject+Subclass.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
 

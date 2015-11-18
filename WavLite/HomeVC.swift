@@ -193,10 +193,11 @@ class HomeVC: UIViewController, PFLogInViewControllerDelegate, PFSignUpViewContr
                 PFLogInFields.SignUpButton,
                 PFLogInFields.PasswordForgotten,
                 PFLogInFields.DismissButton,
-//               PFLogInFields.Facebook),
+                PFLogInFields.Facebook,
                 PFLogInFields.Twitter]
             
-            //            loginVC.facebookPermissions = ["public_profile", "email"]
+            loginVC.facebookPermissions = ["public_profile", "email"]
+            
             loginVC.view.backgroundColor = BACKGROUND_COLOR
             let logoView = UIImageView(image: UIImage(named:"ic_launcher_192"))
             logoView.contentMode = UIViewContentMode.ScaleAspectFit

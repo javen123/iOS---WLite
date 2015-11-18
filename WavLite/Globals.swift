@@ -21,3 +21,5 @@ let BACKGROUND_COLOR = UIColor(red: 18 / 225.0, green: 32 / 225.0, blue: 64 / 22
 
 public typealias UpdateComplete = () -> ()
 public typealias AlertOrder = () -> ()
+
+var FACEBOOK_APP_ID = "1620572828207555"
